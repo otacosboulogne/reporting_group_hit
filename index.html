@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Reporting Compétition Restaurants - Blocs séparés V15</title>
+<title>Reporting Compétition Restaurants - Blocs séparés V16 rapide</title>
 <style>
 :root{
   --orange:#ff7900;--orange2:#ffb000;--blue:#102a56;--navy:#071528;--bg:#f4f7fb;--card:#ffffff;--text:#172033;--muted:#667085;--line:#dbe4f0;--soft:#f8fafc;--success:#16a34a;--danger:#dc2626;--warn:#f59e0b;--shadow:0 18px 45px rgba(16,42,86,.10);--radius:20px;
@@ -243,7 +243,7 @@ function isReportSentFor(dateService,restaurantCode,service){
 
   return isReportSentLocal(dateService,restaurantCode,service);
 }
-function appsScriptJsonp(params={},timeoutMs=9000){
+function appsScriptJsonp(params={},timeoutMs=5000){
   return new Promise((resolve,reject)=>{
     if(!APPS_SCRIPT_URL){resolve(null);return}
     const cb='reporting_jsonp_'+Date.now()+'_'+Math.random().toString(36).slice(2);
@@ -252,7 +252,7 @@ function appsScriptJsonp(params={},timeoutMs=9000){
     const script=document.createElement('script');
     let done=false;
     const cleanup=()=>{try{delete window[cb]}catch(e){window[cb]=undefined}script.remove()};
-    const timer=setTimeout(()=>{if(done)return;done=true;cleanup();reject(new Error('Timeout vérification Google Sheets'))},timeoutMs);
+    const timer=setTimeout(()=>{if(done)return;done=true;cleanup();reject(new Error('Timeout vérification Google Sheets ('+Math.round(timeoutMs/1000)+'s)'))},timeoutMs);
     window[cb]=(data)=>{if(done)return;done=true;clearTimeout(timer);cleanup();resolve(data||{})};
     script.onerror=()=>{if(done)return;done=true;clearTimeout(timer);cleanup();reject(new Error('Erreur chargement Apps Script'))};
     script.src=APPS_SCRIPT_URL+sep+query;
@@ -293,7 +293,7 @@ async function checkReportOnServer(dateService,restaurantCode,service,force=fals
   if(!force&&reportStatusCache[cacheKey]?.checkedAt)return reportStatusCache[cacheKey];
 
   try{
-    const data=await appsScriptJsonp({action:'checkReport',dateService,restaurantCode,service},12000);
+    const data=await appsScriptJsonp({action:'checkReport',dateService,restaurantCode,service},5500);
     cacheServerReportStatus(dateService,restaurantCode,service,data);
   }catch(e){
     console.error('Erreur checkReport Google Sheets',e);
@@ -349,7 +349,21 @@ function markStockUnlockSent(dateService,restaurantCode,service,payload){const k
 function isStockUnlockSentLocal(dateService,restaurantCode,service){const k=stockUnlockLocalKey(dateService,restaurantCode,service);return !!k&&localStorage.getItem(k)==='sent'}
 function isStockUnlockSentFor(dateService,restaurantCode,service){const k=stockUnlockServerKey(dateService,restaurantCode,service);const cached=k?stockUnlockStatusCache[k]:null;if(cached&&cached.checkedAt){if(cached.ok===false||cached.error)return false;return !!cached.exists}return isStockUnlockSentLocal(dateService,restaurantCode,service)}
 function cacheStockUnlockStatus(dateService,restaurantCode,service,data){const k=stockUnlockServerKey(dateService,restaurantCode,service);if(!k)return;stockUnlockStatusCache[k]={...(data||{}),checkedAt:new Date().toISOString()};if(data&&data.exists&&data.payload){markStockUnlockSent(dateService,restaurantCode,service,data.payload)}}
-async function checkStockUnlockOnServer(dateService,restaurantCode,service,force=false){if(!APPS_SCRIPT_URL||!dateService||!restaurantCode||!service)return null;const cacheKey=stockUnlockServerKey(dateService,restaurantCode,service);if(!force&&stockUnlockStatusCache[cacheKey]?.checkedAt)return stockUnlockStatusCache[cacheKey];try{const data=await appsScriptJsonp({action:'checkStockUnlock',dateService,restaurantCode,service},12000);cacheStockUnlockStatus(dateService,restaurantCode,service,data)}catch(e){console.error('Erreur checkStockUnlock Google Sheets',e);cacheStockUnlockStatus(dateService,restaurantCode,service,{ok:false,exists:false,error:String(e&&e.message?e.message:e)})}return stockUnlockStatusCache[cacheKey]||null}
+async function checkStockUnlockOnServer(dateService,restaurantCode,service,force=false){
+  if(!APPS_SCRIPT_URL||!dateService||!restaurantCode||!service)return null;
+  const cacheKey=stockUnlockServerKey(dateService,restaurantCode,service);
+  if(!force&&stockUnlockStatusCache[cacheKey]?.checkedAt)return stockUnlockStatusCache[cacheKey];
+
+  try{
+    const data=await appsScriptJsonp({action:'checkStockUnlock',dateService,restaurantCode,service},4500);
+    cacheStockUnlockStatus(dateService,restaurantCode,service,data);
+  }catch(e){
+    console.error('Erreur checkStockUnlock Google Sheets',e);
+    cacheStockUnlockStatus(dateService,restaurantCode,service,{ok:false,exists:false,error:String(e&&e.message?e.message:e)});
+  }
+
+  return stockUnlockStatusCache[cacheKey]||null;
+}
 function missingReportTargetForCurrent(){if(!commonComplete())return null;const d=val('dateService'),r=val('restaurant'),s=val('service');if(s==='soir')return {dateService:d,restaurantCode:r,service:'matin',currentService:'soir',kind:'matin',label:'Stock Matin',missingLabel:`Matin du ${d}`,title:'Stock Matin obligatoire',text:`Le rapport Matin du ${d} n’est pas fait pour ${restoLabel()}. Pour continuer le rapport Soir, saisis uniquement le Stock Matin, puis valide avec le code Google Authenticator.`};if(s==='matin'){const prev=previousDateISO(d);if(!prev)return null;return {dateService:prev,restaurantCode:r,service:'soir',currentService:'matin',kind:'soir',label:'Stock de la veille',missingLabel:`Soir du ${prev}`,title:'Stock de la veille obligatoire',text:`Le rapport Soir de la veille (${prev}) n’est pas fait pour ${restoLabel()}. Pour continuer le rapport Matin, saisis uniquement le stock final de la veille, puis valide avec le code Google Authenticator.`}}return null}
 function stockUnlockTargetsForCurrent(){const target=missingReportTargetForCurrent();return target?[target]:[]}
 function stockUnlockContextForCurrent(){const target=missingReportTargetForCurrent();if(!target)return null;const reportCached=reportStatusCache[serverReportCacheKey(target.dateService,target.restaurantCode,target.service)];if(isReportStatusUnknown(target.dateService,target.restaurantCode,target.service))return null;if(reportCached&&(reportCached.ok===false||reportCached.error))return null;if(isReportSentFor(target.dateService,target.restaurantCode,target.service))return null;const stockCached=stockUnlockStatusCache[stockUnlockServerKey(target.dateService,target.restaurantCode,target.service)];if(isStockUnlockStatusUnknown(target.dateService,target.restaurantCode,target.service))return null;if(stockCached&&(stockCached.ok===false||stockCached.error))return null;if(isStockUnlockSentFor(target.dateService,target.restaurantCode,target.service))return null;return target}
@@ -365,7 +379,99 @@ function stockUnlockTotalKg(p){const ctx=stockUnlockContext||stockUnlockContextF
 function refreshStockUnlockTotals(){const ctx=stockUnlockContext||stockUnlockContextForCurrent();const isMatin=ctx&&ctx.service==='matin';stockProducts.forEach(p=>{const wrap=$(`wrap_unlock_${p.id}_livraisonCartons`);if(wrap)wrap.classList.toggle('hidden',!isMatin||unlockVal(`unlock_${p.id}_livraison`)!=='Oui');const total=$(`unlock_total_${p.id}`);if(total)total.textContent=stockUnlockTotalKg(p).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' kg'})}
 function validateStockUnlockForm(){qsa('#stockUnlockOverlay .invalid').forEach(el=>el.classList.remove('invalid'));const ctx=stockUnlockContext||stockUnlockContextForCurrent();if(!ctx){showToast('Aucun rapport manquant détecté.');return false}const isMatin=ctx.service==='matin';let ok=true;stockProducts.forEach(p=>{[`unlock_${p.id}_kg`,`unlock_${p.id}_sachets`,`unlock_${p.id}_cartons`,`unlock_${p.id}_pertesKg`].forEach(id=>{const el=$(id);if(el&&!String(el.value||'').trim()){markInvalid(el,true);ok=false}});if(isMatin){const liv=$(`unlock_${p.id}_livraison`);if(liv&&!String(liv.value||'').trim()){markInvalid(liv,true);ok=false}if(unlockVal(`unlock_${p.id}_livraison`)==='Oui'){const el=$(`unlock_${p.id}_livraisonCartons`);if(el&&!String(el.value||'').trim()){markInvalid(el,true);ok=false}}}});const otp=val('stockUnlockOtp').replace(/\D/g,'');if(!/^\d{6}$/.test(otp)){markInvalid($('stockUnlockOtp'),true);ok=false}if(!ok)showToast('Complète le stock et le code Google Authenticator à 6 chiffres.');return ok}
 function collectStockUnlockOnlyPayload(){const ctx=stockUnlockContext||stockUnlockContextForCurrent();const isMatin=ctx.service==='matin';const stocks=stockProducts.map(p=>{const pertesKg=unlockNum(`unlock_${p.id}_pertesKg`);return {produit:p.label,codeProduit:p.id,typeStock:isMatin?'Stock Matin saisi pour déblocage':'Stock final Soir saisi pour déblocage',kgSaisi:unlockNum(`unlock_${p.id}_kg`),sachets:unlockNum(`unlock_${p.id}_sachets`),cartons:unlockNum(`unlock_${p.id}_cartons`),cartonKg:p.cartonKg,sachetKg:p.sachetKg,livraison:isMatin?unlockVal(`unlock_${p.id}_livraison`):'Non applicable',livraisonCartons:isMatin&&unlockVal(`unlock_${p.id}_livraison`)==='Oui'?unlockNum(`unlock_${p.id}_livraisonCartons`):0,pertesKg,pertesKgSaisie:pertesKg,pertesKgService:pertesKg,pertesKgMatinDeduit:0,totalKg:stockUnlockTotalKg(p)}});return {action:'stockUnlockOnly',meta:{dateService:ctx.dateService,restaurant:restoLabel(),restaurantCode:ctx.restaurantCode,responsable:val('responsable'),service:ctx.service,currentServiceBlocked:ctx.currentService,stockUnlockLabel:ctx.label,totpCode:val('stockUnlockOtp').replace(/\D/g,''),createdAt:new Date().toISOString()},donneesService:{stocks,pertesService:{pertesParProduit:stocks.map(s=>({produit:s.produit,codeProduit:s.codeProduit,pertesKg:s.pertesKg,pertesKgService:s.pertesKgService,pertesKgSaisie:s.pertesKgSaisie,pertesKgMatinDeduit:0})),totalPertesProduitsKg:stocks.reduce((t,s)=>t+(parseFloat(s.pertesKg)||0),0),totalPertesProduitsKgSaisie:stocks.reduce((t,s)=>t+(parseFloat(s.pertesKgSaisie)||0),0)}}}}
-async function sendStockUnlockOnly(){if(isSendingStockUnlock)return;if(!validateStockUnlockForm())return;const payload=collectStockUnlockOnlyPayload();const d=payload.meta.dateService,r=payload.meta.restaurantCode,s=payload.meta.service,label=payload.meta.stockUnlockLabel;isSendingStockUnlock=true;const btn=$('sendStockUnlockBtn');if(btn){btn.disabled=true;btn.textContent='Envoi du stock...'}setSendStatus('Ne quittez pas la page : envoi du stock de déblocage en cours.','warn');try{if(APPS_SCRIPT_URL){await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});let confirmed=null;for(let i=0;i<6;i++){await new Promise(resolve=>setTimeout(resolve,i===0?1800:1300));confirmed=await checkStockUnlockOnServer(d,r,s,true);if(confirmed&&confirmed.exists)break}if(!(confirmed&&confirmed.exists)){setSendStatus('Stock non confirmé : vérifie le code Google Authenticator et réessaie.','warn');showToast('Code refusé ou stock non confirmé.');return}markStockUnlockSent(d,r,s,confirmed.payload||payload)}else{markStockUnlockSent(d,r,s,payload)}closeStockUnlockOverlay();stockUnlockContext=null;setSendStatus(label+' enregistré. La période en cours est maintenant débloquée.','ok');showToast(label+' envoyé, tu peux envoyer le rapport.');await ensureReportStatusesFromServer(true);await ensureStockUnlockStatusesForCurrent(true);updateSubmitButtonState()}catch(e){console.error(e);setSendStatus('Erreur pendant l’envoi du stock. Les données restent à l’écran, tu peux réessayer.','warn');showToast('Erreur envoi stock, réessaie.')}finally{isSendingStockUnlock=false;if(btn){btn.disabled=false;btn.textContent='Envoyer le stock et débloquer'}}}
+async function sendStockUnlockOnly(){
+  if(isSendingStockUnlock)return;
+  if(!validateStockUnlockForm())return;
+
+  const payload=collectStockUnlockOnlyPayload();
+  const d=payload.meta.dateService;
+  const r=payload.meta.restaurantCode;
+  const s=payload.meta.service;
+  const label=payload.meta.stockUnlockLabel;
+  const btn=$('sendStockUnlockBtn');
+  const note=$('stockUnlockNote');
+
+  const setUnlockMessage=(msg,type='warn')=>{
+    if(note){
+      note.textContent=msg;
+      note.classList.remove('warn','danger','ok');
+      if(type)note.classList.add(type);
+    }
+  };
+
+  isSendingStockUnlock=true;
+
+  if(btn){
+    btn.disabled=true;
+    btn.textContent='Envoi en cours...';
+  }
+
+  setUnlockMessage('Envoi du stock en cours, ne quitte pas cette page...', 'warn');
+  setSendStatus('Envoi du stock de déblocage en cours...', 'warn');
+
+  try{
+    if(APPS_SCRIPT_URL){
+      await fetch(APPS_SCRIPT_URL,{
+        method:'POST',
+        mode:'no-cors',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body:JSON.stringify(payload),
+        cache:'no-store'
+      });
+
+      let confirmed=null;
+      let lastError='';
+      const delays=[350,650,900,1200,1600,2200];
+
+      for(let i=0;i<delays.length;i++){
+        setUnlockMessage(`Stock envoyé, confirmation Google Sheets... ${i+1}/${delays.length}`, 'warn');
+        await new Promise(resolve=>setTimeout(resolve,delays[i]));
+
+        confirmed=await checkStockUnlockOnServer(d,r,s,true);
+
+        if(confirmed&&confirmed.exists)break;
+        if(confirmed&&confirmed.error)lastError=confirmed.error;
+      }
+
+      if(!(confirmed&&confirmed.exists)){
+        setUnlockMessage(
+          'Stock non confirmé. Le plus souvent : code Google Authenticator incorrect, Apps Script non redéployé en nouvelle version, ou APPS_SCRIPT_URL pas à jour.'+(lastError?' Détail : '+lastError:''),
+          'danger'
+        );
+        setSendStatus('Stock non confirmé : vérifie le code ou le déploiement Apps Script, puis réessaie.','warn');
+        showToast('Stock non confirmé.');
+        return;
+      }
+
+      markStockUnlockSent(d,r,s,confirmed.payload||payload);
+    }else{
+      markStockUnlockSent(d,r,s,payload);
+    }
+
+    closeStockUnlockOverlay();
+    stockUnlockContext=null;
+
+    setSendStatus(label+' enregistré. La période en cours est débloquée.','ok');
+    showToast(label+' envoyé, tu peux envoyer le rapport.');
+
+    updateSubmitButtonState();
+
+  }catch(e){
+    console.error(e);
+    setUnlockMessage(
+      'Erreur technique pendant l’envoi. Les données restent à l’écran, tu peux réessayer. Vérifie la connexion et le déploiement Apps Script.',
+      'danger'
+    );
+    setSendStatus('Erreur pendant l’envoi du stock. Les données restent à l’écran.','warn');
+    showToast('Erreur envoi stock.');
+  }finally{
+    isSendingStockUnlock=false;
+    if(btn){
+      btn.disabled=false;
+      btn.textContent='Envoyer le stock et débloquer';
+    }
+  }
+}
 function markReportSent(payload){const k=reportUniqueKey();if(!k)return;localStorage.setItem(k,'sent');localStorage.setItem(k+'_sentAt',new Date().toISOString());try{localStorage.setItem(k+'_payload',JSON.stringify(payload))}catch(e){}}
 function setSendStatus(msg,type=''){const el=$('sendStatus');if(!el)return;el.textContent=msg||'';el.className='send-status'+(msg?' show':'')+(type?' '+type:'')}
 function updateSubmitButtonState(){
@@ -594,8 +700,13 @@ async function saveLocal(){
 async function validateReport(){
   if(isSendingReport)return;
 
-  await ensureReportStatusesFromServer(true);
-  await ensureStockUnlockStatusesForCurrent(true);
+  if(hasPendingReportStatusCheck()||hasPendingStockUnlockStatusCheck()){
+    setSendStatus('Vérification rapide Google Sheets...', 'warn');
+    await Promise.all([
+      ensureReportStatusesFromServer(false),
+      ensureStockUnlockStatusesForCurrent(false)
+    ]);
+  }
 
   const ctx=stockUnlockContextForCurrent();
   if(ctx){
@@ -611,8 +722,8 @@ async function validateReport(){
 
   isSendingReport=true;
   updateSubmitButtonState();
-  setSendStatus('Ne quittez pas la page, le rapport est en cours d’envoi vers Google Sheets...','warn');
-  showToast('Envoi en cours, ne quittez pas la page.');
+  setSendStatus('Envoi du rapport en cours vers Google Sheets...','warn');
+  showToast('Envoi en cours.');
 
   if(!APPS_SCRIPT_URL){
     markReportSent(payload);
@@ -627,19 +738,25 @@ async function validateReport(){
     await fetch(APPS_SCRIPT_URL,{
       method:'POST',
       mode:'no-cors',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(payload)
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(payload),
+      cache:'no-store'
     });
 
     let confirmed=null;
-    for(let i=0;i<5;i++){
-      await new Promise(resolve=>setTimeout(resolve,i===0?2200:1500));
+    const delays=[500,900,1300,1800];
+
+    for(let i=0;i<delays.length;i++){
+      setSendStatus(`Rapport envoyé, confirmation Google Sheets... ${i+1}/${delays.length}`,'warn');
+      await new Promise(resolve=>setTimeout(resolve,delays[i]));
+
       confirmed=await checkReportOnServer(
         val('dateService'),
         val('restaurant'),
         val('service'),
         true
       );
+
       if(confirmed&&confirmed.exists)break;
     }
 
@@ -648,7 +765,7 @@ async function validateReport(){
       isSendingReport=false;
       updateSubmitButtonState();
       setSendStatus(`Rapport envoyé et confirmé dans Google Sheets : ${reportHumanLabel()}.`,'ok');
-      showToast('Rapport confirmé dans Google Sheets.');
+      showToast('Rapport confirmé.');
     }else{
       clearReportSentLocal(val('dateService'),val('restaurant'),val('service'));
       isSendingReport=false;
@@ -662,7 +779,7 @@ async function validateReport(){
     isSendingReport=false;
     updateSubmitButtonState();
     setSendStatus('Erreur d’envoi. Le brouillon est gardé en local, tu peux réessayer.','warn');
-    showToast('Erreur d’envoi. Brouillon gardé en local.');
+    showToast('Erreur d’envoi. Brouillon gardé.');
   }
 }
 function resetForm(){if(!confirm('Réinitialiser le formulaire affiché ?'))return;document.querySelector('form')?.reset();reductions=[];refaits=[];heuresSupp=[];responsablesErreurs=[];huileFriteusesSelection=[];qsa('input[type=radio]').forEach(i=>i.checked=false);renderRepeats();refresh();showToast('Formulaire réinitialisé.')}
