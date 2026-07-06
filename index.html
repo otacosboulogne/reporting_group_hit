@@ -167,7 +167,7 @@
   <div class="dependency-modal stock-modal">
     <div class="dependency-icon">!</div>
     <h2 id="stockUnlockTitle">Stock obligatoire du rapport manquant</h2>
-    <p id="stockUnlockText">Un rapport obligatoire manque. Saisis uniquement son stock, puis valide avec le code Google Authenticator pour débloquer la période en cours.</p>
+    <p id="stockUnlockText">Un rapport obligatoire manque. Saisis les éléments demandés, puis valide avec le code Google Authenticator pour débloquer la période en cours.</p>
     <div class="stock-unlock-head">
       <div class="stock-unlock-info"><span>Restaurant</span><br><strong id="stockUnlockRestaurant">-</strong></div>
       <div class="stock-unlock-info"><span>Rapport manquant</span><br><strong id="stockUnlockMissingReport">-</strong></div>
@@ -181,7 +181,7 @@
     </div>
     <div class="stock-unlock-actions">
       <button class="btn btn-light" type="button" onclick="closeStockUnlockOverlay()">Retour</button>
-      <button class="btn btn-primary" id="sendStockUnlockBtn" type="button" onclick="sendStockUnlockOnly()">Envoyer le stock et débloquer</button>
+      <button class="btn btn-primary" id="sendStockUnlockBtn" type="button" onclick="sendStockUnlockOnly()">Envoyer et débloquer</button>
     </div>
   </div>
 </div>
@@ -364,21 +364,296 @@ async function checkStockUnlockOnServer(dateService,restaurantCode,service,force
 
   return stockUnlockStatusCache[cacheKey]||null;
 }
-function missingReportTargetForCurrent(){if(!commonComplete())return null;const d=val('dateService'),r=val('restaurant'),s=val('service');if(s==='soir')return {dateService:d,restaurantCode:r,service:'matin',currentService:'soir',kind:'matin',label:'Stock Matin',missingLabel:`Matin du ${d}`,title:'Stock Matin obligatoire',text:`Le rapport Matin du ${d} n’est pas fait pour ${restoLabel()}. Pour continuer le rapport Soir, saisis uniquement le Stock Matin, puis valide avec le code Google Authenticator.`};if(s==='matin'){const prev=previousDateISO(d);if(!prev)return null;return {dateService:prev,restaurantCode:r,service:'soir',currentService:'matin',kind:'soir',label:'Stock de la veille',missingLabel:`Soir du ${prev}`,title:'Stock de la veille obligatoire',text:`Le rapport Soir de la veille (${prev}) n’est pas fait pour ${restoLabel()}. Pour continuer le rapport Matin, saisis uniquement le stock final de la veille, puis valide avec le code Google Authenticator.`}}return null}
+function missingReportTargetForCurrent(){
+  if(!commonComplete())return null;
+  const d=val('dateService'),r=val('restaurant'),s=val('service');
+
+  if(s==='soir'){
+    return {
+      dateService:d,
+      restaurantCode:r,
+      service:'matin',
+      currentService:'soir',
+      kind:'matin',
+      label:'Stock Matin + changement huile',
+      missingLabel:`Matin du ${d}`,
+      title:'Rapport Matin manquant',
+      text:`Le rapport Matin du ${d} n’est pas fait pour ${restoLabel()}. Pour continuer le rapport Soir, saisis le Stock Matin et le changement d’huile, puis valide avec le code Google Authenticator.`,
+      requireStock:true,
+      requireCa:false,
+      requirePertes:false,
+      requireHuile:true,
+      stockMode:'matin'
+    };
+  }
+
+  if(s==='matin'){
+    const prev=previousDateISO(d);
+    if(!prev)return null;
+    return {
+      dateService:prev,
+      restaurantCode:r,
+      service:'soir',
+      currentService:'matin',
+      kind:'veille',
+      label:'Stock + CA + pertes + changement huile de la veille',
+      missingLabel:`Soir du ${prev}`,
+      title:'Rapport Soir de la veille manquant',
+      text:`Le rapport Soir de la veille (${prev}) n’est pas fait pour ${restoLabel()}. Pour continuer le rapport Matin, saisis le stock final, le CA, les pertes et le changement d’huile de la veille, puis valide avec le code Google Authenticator.`,
+      requireStock:true,
+      requireCa:true,
+      requirePertes:true,
+      requireHuile:true,
+      stockMode:'soir'
+    };
+  }
+
+  return null;
+}
 function stockUnlockTargetsForCurrent(){const target=missingReportTargetForCurrent();return target?[target]:[]}
 function stockUnlockContextForCurrent(){const target=missingReportTargetForCurrent();if(!target)return null;const reportCached=reportStatusCache[serverReportCacheKey(target.dateService,target.restaurantCode,target.service)];if(isReportStatusUnknown(target.dateService,target.restaurantCode,target.service))return null;if(reportCached&&(reportCached.ok===false||reportCached.error))return null;if(isReportSentFor(target.dateService,target.restaurantCode,target.service))return null;const stockCached=stockUnlockStatusCache[stockUnlockServerKey(target.dateService,target.restaurantCode,target.service)];if(isStockUnlockStatusUnknown(target.dateService,target.restaurantCode,target.service))return null;if(stockCached&&(stockCached.ok===false||stockCached.error))return null;if(isStockUnlockSentFor(target.dateService,target.restaurantCode,target.service))return null;return target}
 function hasPendingStockUnlockStatusCheck(){return stockUnlockTargetsForCurrent().some(t=>isStockUnlockStatusUnknown(t.dateService,t.restaurantCode,t.service))}
 async function ensureStockUnlockStatusesForCurrent(force=false){if(!commonComplete()||!APPS_SCRIPT_URL)return;isCheckingStockUnlockStatus=true;updateSubmitButtonState();try{await Promise.all(stockUnlockTargetsForCurrent().map(t=>checkStockUnlockOnServer(t.dateService,t.restaurantCode,t.service,force)))}catch(e){console.error(e)}finally{isCheckingStockUnlockStatus=false;updateSubmitButtonState()}}
 function scheduleStockUnlockStatusCheck(force=false){if(!commonComplete()||!APPS_SCRIPT_URL)return;const key=stockUnlockTargetsForCurrent().map(t=>`${t.dateService}_${t.restaurantCode}_${t.service}`).join('|');if(!force&&key===lastStockUnlockStatusCheckKey&&!hasPendingStockUnlockStatusCheck())return;lastStockUnlockStatusCheckKey=key;clearTimeout(stockUnlockStatusCheckTimer);stockUnlockStatusCheckTimer=setTimeout(()=>ensureStockUnlockStatusesForCurrent(force),280)}
-function sendDependencyMessage(){const ctx=stockUnlockContextForCurrent();return ctx?`Impossible d’envoyer le rapport ${val('service')==='matin'?'Matin':'Soir'} : il faut d’abord saisir le ${ctx.label} du rapport manquant (${ctx.missingLabel}) pour ${restoLabel()}, puis valider avec Google Authenticator.`:''}
-function openStockUnlockOverlay(){const ctx=stockUnlockContextForCurrent();if(!ctx){showToast('Aucun stock bloquant à saisir.');return}stockUnlockContext=ctx;const isMatin=ctx.service==='matin';$('stockUnlockTitle').textContent=ctx.title;$('stockUnlockText').textContent=ctx.text;$('stockUnlockRestaurant').textContent=restoLabel();$('stockUnlockMissingReport').textContent=ctx.missingLabel;$('stockUnlockCurrentReport').textContent=`${val('service')==='matin'?'Matin':'Soir'} du ${val('dateService')}`;$('stockUnlockNote').textContent=`Saisie demandée : ${ctx.label} du rapport manquant. Cette saisie débloque uniquement la période en cours, elle ne remplace pas un rapport complet.`;const grid=$('stockUnlockGrid');grid.innerHTML=stockProducts.map(p=>`<div class="stock-card"><h3>${p.label}</h3><div class="note" style="margin-top:0;margin-bottom:10px">${isMatin?'Stock Matin / inventaire initial':'Stock final du Soir manquant'}</div><div class="grid-2"><div class="field"><label>${isMatin?'Inventaire sachets ouverts matin en KG *':'Stock sachets ouverts final en KG *'}</label><input type="number" step="0.01" min="0" id="unlock_${p.id}_kg"></div><div class="field"><label>${isMatin?'Nombre sachets *':'Sachets restants *'} (${p.sachetKg} kg/sachet)</label><input type="number" step="0.5" min="0" id="unlock_${p.id}_sachets"></div><div class="field"><label>${isMatin?'Nombre cartons *':'Cartons restants *'} (${p.cartonKg} kg/carton)</label><input type="number" step="0.5" min="0" id="unlock_${p.id}_cartons"></div>${isMatin?`<div class="field"><label>Livraison ${p.label} ? *</label><select id="unlock_${p.id}_livraison"><option value="">Choisir</option><option>Non</option><option>Oui</option></select></div><div class="field hidden" id="wrap_unlock_${p.id}_livraisonCartons"><label>Qté livraison en cartons *</label><input type="number" step="0.5" min="0" id="unlock_${p.id}_livraisonCartons"></div>`:''}<div class="field"><label>Pertes en KG ${p.label} *</label><input type="number" step="0.01" min="0" id="unlock_${p.id}_pertesKg"></div></div><div class="stock-unlock-total">Total ${ctx.label} : <span id="unlock_total_${p.id}">0,00 kg</span></div></div>`).join('');qsa('#stockUnlockGrid input,#stockUnlockGrid select').forEach(el=>{el.addEventListener('input',refreshStockUnlockTotals);el.addEventListener('change',refreshStockUnlockTotals)});$('stockUnlockOtp').value='';markInvalid($('stockUnlockOtp'),false);refreshStockUnlockTotals();$('stockUnlockOverlay').classList.add('show');setTimeout(()=>$('stockUnlockOtp')?.focus(),120)}
-function closeStockUnlockOverlay(){const overlay=$('stockUnlockOverlay');if(overlay)overlay.classList.remove('show')}
+function sendDependencyMessage(){const ctx=stockUnlockContextForCurrent();return ctx?`Impossible d’envoyer le rapport ${val('service')==='matin'?'Matin':'Soir'} : il faut d’abord saisir ${ctx.label} pour le rapport manquant (${ctx.missingLabel}) pour ${restoLabel()}, puis valider avec Google Authenticator.`:''}
+function unlockNeedsCa(){const ctx=stockUnlockContext||stockUnlockContextForCurrent();return !!(ctx&&ctx.requireCa)}
+function unlockNeedsPertes(){const ctx=stockUnlockContext||stockUnlockContextForCurrent();return !!(ctx&&ctx.requirePertes)}
+function unlockNeedsHuile(){const ctx=stockUnlockContext||stockUnlockContextForCurrent();return !!(ctx&&ctx.requireHuile)}
+function unlockIsMatinStock(){const ctx=stockUnlockContext||stockUnlockContextForCurrent();return !!(ctx&&ctx.stockMode==='matin')}
+function unlockIsVeille(){const ctx=stockUnlockContext||stockUnlockContextForCurrent();return !!(ctx&&ctx.kind==='veille')}
 function unlockNum(id){return parseFloat((($(id)?.value||'').replace(',','.')))||0}
 function unlockVal(id){return ($(id)?.value||'').trim()}
-function stockUnlockTotalKg(p){const ctx=stockUnlockContext||stockUnlockContextForCurrent();const isMatin=ctx&&ctx.service==='matin';const livraison=(isMatin&&unlockVal(`unlock_${p.id}_livraison`)==='Oui')?unlockNum(`unlock_${p.id}_livraisonCartons`)*p.cartonKg:0;return unlockNum(`unlock_${p.id}_kg`)+(unlockNum(`unlock_${p.id}_sachets`)*p.sachetKg)+(unlockNum(`unlock_${p.id}_cartons`)*p.cartonKg)+livraison}
-function refreshStockUnlockTotals(){const ctx=stockUnlockContext||stockUnlockContextForCurrent();const isMatin=ctx&&ctx.service==='matin';stockProducts.forEach(p=>{const wrap=$(`wrap_unlock_${p.id}_livraisonCartons`);if(wrap)wrap.classList.toggle('hidden',!isMatin||unlockVal(`unlock_${p.id}_livraison`)!=='Oui');const total=$(`unlock_total_${p.id}`);if(total)total.textContent=stockUnlockTotalKg(p).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' kg'})}
-function validateStockUnlockForm(){qsa('#stockUnlockOverlay .invalid').forEach(el=>el.classList.remove('invalid'));const ctx=stockUnlockContext||stockUnlockContextForCurrent();if(!ctx){showToast('Aucun rapport manquant détecté.');return false}const isMatin=ctx.service==='matin';let ok=true;stockProducts.forEach(p=>{[`unlock_${p.id}_kg`,`unlock_${p.id}_sachets`,`unlock_${p.id}_cartons`,`unlock_${p.id}_pertesKg`].forEach(id=>{const el=$(id);if(el&&!String(el.value||'').trim()){markInvalid(el,true);ok=false}});if(isMatin){const liv=$(`unlock_${p.id}_livraison`);if(liv&&!String(liv.value||'').trim()){markInvalid(liv,true);ok=false}if(unlockVal(`unlock_${p.id}_livraison`)==='Oui'){const el=$(`unlock_${p.id}_livraisonCartons`);if(el&&!String(el.value||'').trim()){markInvalid(el,true);ok=false}}}});const otp=val('stockUnlockOtp').replace(/\D/g,'');if(!/^\d{6}$/.test(otp)){markInvalid($('stockUnlockOtp'),true);ok=false}if(!ok)showToast('Complète le stock et le code Google Authenticator à 6 chiffres.');return ok}
-function collectStockUnlockOnlyPayload(){const ctx=stockUnlockContext||stockUnlockContextForCurrent();const isMatin=ctx.service==='matin';const stocks=stockProducts.map(p=>{const pertesKg=unlockNum(`unlock_${p.id}_pertesKg`);return {produit:p.label,codeProduit:p.id,typeStock:isMatin?'Stock Matin saisi pour déblocage':'Stock final Soir saisi pour déblocage',kgSaisi:unlockNum(`unlock_${p.id}_kg`),sachets:unlockNum(`unlock_${p.id}_sachets`),cartons:unlockNum(`unlock_${p.id}_cartons`),cartonKg:p.cartonKg,sachetKg:p.sachetKg,livraison:isMatin?unlockVal(`unlock_${p.id}_livraison`):'Non applicable',livraisonCartons:isMatin&&unlockVal(`unlock_${p.id}_livraison`)==='Oui'?unlockNum(`unlock_${p.id}_livraisonCartons`):0,pertesKg,pertesKgSaisie:pertesKg,pertesKgService:pertesKg,pertesKgMatinDeduit:0,totalKg:stockUnlockTotalKg(p)}});return {action:'stockUnlockOnly',meta:{dateService:ctx.dateService,restaurant:restoLabel(),restaurantCode:ctx.restaurantCode,responsable:val('responsable'),service:ctx.service,currentServiceBlocked:ctx.currentService,stockUnlockLabel:ctx.label,totpCode:val('stockUnlockOtp').replace(/\D/g,''),createdAt:new Date().toISOString()},donneesService:{stocks,pertesService:{pertesParProduit:stocks.map(s=>({produit:s.produit,codeProduit:s.codeProduit,pertesKg:s.pertesKg,pertesKgService:s.pertesKgService,pertesKgSaisie:s.pertesKgSaisie,pertesKgMatinDeduit:0})),totalPertesProduitsKg:stocks.reduce((t,s)=>t+(parseFloat(s.pertesKg)||0),0),totalPertesProduitsKgSaisie:stocks.reduce((t,s)=>t+(parseFloat(s.pertesKgSaisie)||0),0)}}}}
+function unlockCaBornesCalc(){const deductions=isArmentieres()?unlockNum('unlock_caCC'):(unlockNum('unlock_caUber')+unlockNum('unlock_caDeliveroo')+unlockNum('unlock_caCC'));return Math.max(0,unlockNum('unlock_caTotal')-deductions)}
+function unlockCmdBornesCalc(){const deductions=isArmentieres()?unlockNum('unlock_cmdCC'):(unlockNum('unlock_cmdUber')+unlockNum('unlock_cmdDeliveroo')+unlockNum('unlock_cmdCC'));return Math.max(0,unlockNum('unlock_cmdTotal')-deductions)}
+function unlockPertesTotalCalc(){return unlockNum('unlock_montantErreurs')+unlockNum('unlock_montantPertes')}
+function buildStockUnlockCaHtml(){
+  return `<div class="sub-card" style="grid-column:1/-1">
+    <h3 class="sub-title">CA du rapport Soir de la veille</h3>
+    <div class="note" style="margin-top:0;margin-bottom:10px">À saisir depuis le Ticket Z de la veille. ${isArmentieres()?'Armentières : Uber/Deliveroo sont hors Ticket Z global.':'Boulogne : le Ticket Z global comprend Uber, Deliveroo et C&C.'}</div>
+    <div class="grid-4">
+      <div class="field"><label>${isArmentieres()?'CA global Ticket Z hors Uber/Deliveroo *':'CA global - Ticket Z *'}</label><input type="number" step="0.01" min="0" id="unlock_caTotal"></div>
+      <div class="field"><label>${isArmentieres()?'Nbr commandes Ticket Z hors Uber/Deliveroo *':'Nbr global de commandes - Ticket Z *'}</label><input type="number" step="1" min="0" id="unlock_cmdTotal"></div>
+      <div class="field"><label>CA total boissons *</label><input type="number" step="0.01" min="0" id="unlock_caBoissons"></div>
+      <div class="field"><label>Quantité total boissons vendues *</label><input type="number" step="1" min="0" id="unlock_qteBoissons"></div>
+      <div class="field"><label>CA total desserts *</label><input type="number" step="0.01" min="0" id="unlock_caDesserts"></div>
+      <div class="field"><label>Quantité total desserts vendus *</label><input type="number" step="1" min="0" id="unlock_qteDesserts"></div>
+      <div class="field"><label>${isArmentieres()?'CA Uber Eats hors Ticket Z global':'CA Uber Eats - Ticket Z'}</label><input type="number" step="0.01" min="0" id="unlock_caUber"></div>
+      <div class="field"><label>${isArmentieres()?'Nbr commandes Uber hors Ticket Z global':'Nbr Commandes Uber Eats - Ticket Z'}</label><input type="number" step="1" min="0" id="unlock_cmdUber"></div>
+      <div class="field"><label>${isArmentieres()?'CA Deliveroo hors Ticket Z global':'CA Deliveroo - Ticket Z'}</label><input type="number" step="0.01" min="0" id="unlock_caDeliveroo"></div>
+      <div class="field"><label>${isArmentieres()?'Nbr commandes Deliveroo hors Ticket Z global':'Nbr Commandes Deliveroo - Ticket Z'}</label><input type="number" step="1" min="0" id="unlock_cmdDeliveroo"></div>
+      <div class="field"><label>CA Click & Collect - Ticket Z</label><input type="number" step="0.01" min="0" id="unlock_caCC"></div>
+      <div class="field"><label>Nbr Commandes C&C - Ticket Z</label><input type="number" step="1" min="0" id="unlock_cmdCC"></div>
+      <div class="field calc-field"><label>CA Bornes & caisse calculé</label><input id="unlock_caBornes" readonly></div>
+      <div class="field calc-field"><label>Commandes Bornes & caisse calculées</label><input id="unlock_cmdBornes" readonly></div>
+    </div>
+  </div>`;
+}
+function buildStockUnlockPertesHtml(){
+  return `<div class="sub-card" style="grid-column:1/-1">
+    <h3 class="sub-title">Pertes du rapport Soir de la veille</h3>
+    <div class="grid-4">
+      <div class="field"><label>Nombre d'erreurs</label><input type="number" step="1" min="0" id="unlock_nbErreurs"></div>
+      <div class="field"><label>Montant des erreurs *</label><input type="number" step="0.01" min="0" id="unlock_montantErreurs"></div>
+      <div class="field"><label>Montant des pertes *</label><input type="number" step="0.01" min="0" id="unlock_montantPertes"></div>
+      <div class="field calc-field"><label>Total erreurs + pertes</label><input id="unlock_totalPertesService" readonly></div>
+    </div>
+  </div>`;
+}
+function buildStockUnlockHuileHtml(){
+  const list=friteusesByRestaurant[val('restaurant')]||[];
+  return `<div class="sub-card" style="grid-column:1/-1">
+    <h3 class="sub-title">Changement d'huile du rapport manquant</h3>
+    <div class="grid-2">
+      <div class="field"><label>Changement d'huile effectué ? *</label><select id="unlock_huileChangement"><option value="">Choisir</option><option>Non</option><option>Oui</option></select></div>
+      <div class="field hidden" id="unlock_huileDateWrap"><label>Jour du changement d'huile *</label><input type="date" id="unlock_huileDate" value="${(stockUnlockContext||stockUnlockContextForCurrent()||{}).dateService||''}"></div>
+    </div>
+    <div class="field hidden" id="unlock_huileFriteusesWrap" style="margin-top:10px"><label>Friteuse(s) concernée(s) *</label><div class="check-list" id="unlock_huileFriteusesList">${list.length?list.map(f=>`<label><input type="checkbox" value="${f}" data-unlock-friteuse>${f}</label>`).join(''):'<div class="note">Choisis d’abord le restaurant.</div>'}</div></div>
+  </div>`;
+}
+function buildStockUnlockStockHtml(){
+  const isMatin=unlockIsMatinStock();
+  const askProductPertes=unlockNeedsPertes();
+  return stockProducts.map(p=>`<div class="stock-card"><h3>${p.label}</h3><div class="note" style="margin-top:0;margin-bottom:10px">${isMatin?'Stock Matin / inventaire initial':'Stock final du Soir de la veille'}</div><div class="grid-2"><div class="field"><label>${isMatin?'Inventaire sachets ouverts matin en KG *':'Stock sachets ouverts final en KG *'}</label><input type="number" step="0.01" min="0" id="unlock_${p.id}_kg"></div><div class="field"><label>${isMatin?'Nombre sachets *':'Sachets restants *'} (${p.sachetKg} kg/sachet)</label><input type="number" step="0.5" min="0" id="unlock_${p.id}_sachets"></div><div class="field"><label>${isMatin?'Nombre cartons *':'Cartons restants *'} (${p.cartonKg} kg/carton)</label><input type="number" step="0.5" min="0" id="unlock_${p.id}_cartons"></div>${isMatin?`<div class="field"><label>Livraison ${p.label} ? *</label><select id="unlock_${p.id}_livraison"><option value="">Choisir</option><option>Non</option><option>Oui</option></select></div><div class="field hidden" id="wrap_unlock_${p.id}_livraisonCartons"><label>Qté livraison en cartons *</label><input type="number" step="0.5" min="0" id="unlock_${p.id}_livraisonCartons"></div>`:''}${askProductPertes?`<div class="field"><label>Pertes en KG ${p.label} *</label><input type="number" step="0.01" min="0" id="unlock_${p.id}_pertesKg"></div>`:''}</div><div class="stock-unlock-total">Total ${isMatin?'Stock Matin':'Stock final'} : <span id="unlock_total_${p.id}">0,00 kg</span></div></div>`).join('');
+}
+function openStockUnlockOverlay(){
+  const ctx=stockUnlockContextForCurrent();
+  if(!ctx){showToast('Aucun rapport bloquant à saisir.');return}
+  stockUnlockContext=ctx;
+  $('stockUnlockTitle').textContent=ctx.title;
+  $('stockUnlockText').textContent=ctx.text;
+  $('stockUnlockRestaurant').textContent=restoLabel();
+  $('stockUnlockMissingReport').textContent=ctx.missingLabel;
+  $('stockUnlockCurrentReport').textContent=`${val('service')==='matin'?'Matin':'Soir'} du ${val('dateService')}`;
+  $('stockUnlockNote').textContent=`Saisie demandée : ${ctx.label}. Cette saisie débloque uniquement la période en cours et ne compte pas comme un rapport complet.`;
+
+  const sections=[];
+  if(ctx.requireCa)sections.push(buildStockUnlockCaHtml());
+  if(ctx.requirePertes)sections.push(buildStockUnlockPertesHtml());
+  if(ctx.requireStock)sections.push(buildStockUnlockStockHtml());
+  if(ctx.requireHuile)sections.push(buildStockUnlockHuileHtml());
+
+  const grid=$('stockUnlockGrid');
+  grid.innerHTML=sections.join('');
+
+  qsa('#stockUnlockGrid input,#stockUnlockGrid select').forEach(el=>{
+    el.addEventListener('input',refreshStockUnlockTotals);
+    el.addEventListener('change',refreshStockUnlockTotals);
+  });
+  $('stockUnlockOtp').value='';
+  markInvalid($('stockUnlockOtp'),false);
+  refreshStockUnlockTotals();
+  $('stockUnlockOverlay').classList.add('show');
+  setTimeout(()=>$('stockUnlockOtp')?.focus(),120);
+}
+function closeStockUnlockOverlay(){const overlay=$('stockUnlockOverlay');if(overlay)overlay.classList.remove('show')}
+function stockUnlockTotalKg(p){const isMatin=unlockIsMatinStock();const livraison=(isMatin&&unlockVal(`unlock_${p.id}_livraison`)==='Oui')?unlockNum(`unlock_${p.id}_livraisonCartons`)*p.cartonKg:0;return unlockNum(`unlock_${p.id}_kg`)+(unlockNum(`unlock_${p.id}_sachets`)*p.sachetKg)+(unlockNum(`unlock_${p.id}_cartons`)*p.cartonKg)+livraison}
+function refreshStockUnlockTotals(){
+  const isMatin=unlockIsMatinStock();
+  stockProducts.forEach(p=>{
+    const wrap=$(`wrap_unlock_${p.id}_livraisonCartons`);
+    if(wrap)wrap.classList.toggle('hidden',!isMatin||unlockVal(`unlock_${p.id}_livraison`)!=='Oui');
+    const total=$(`unlock_total_${p.id}`);
+    if(total)total.textContent=stockUnlockTotalKg(p).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' kg';
+  });
+  if($('unlock_caBornes'))$('unlock_caBornes').value=money(unlockCaBornesCalc());
+  if($('unlock_cmdBornes'))$('unlock_cmdBornes').value=unlockCmdBornesCalc().toLocaleString('fr-FR');
+  if($('unlock_totalPertesService'))$('unlock_totalPertesService').value=money(unlockPertesTotalCalc());
+  const huileOui=unlockVal('unlock_huileChangement')==='Oui';
+  const dateWrap=$('unlock_huileDateWrap');
+  const friteusesWrap=$('unlock_huileFriteusesWrap');
+  if(dateWrap)dateWrap.classList.toggle('hidden',!huileOui);
+  if(friteusesWrap)friteusesWrap.classList.toggle('hidden',!huileOui);
+  if(!huileOui){
+    if($('unlock_huileDate'))$('unlock_huileDate').value=(stockUnlockContext||stockUnlockContextForCurrent()||{}).dateService||'';
+    qsa('[data-unlock-friteuse]').forEach(el=>el.checked=false);
+  }
+}
+function validateStockUnlockForm(){
+  qsa('#stockUnlockOverlay .invalid').forEach(el=>el.classList.remove('invalid'));
+  const ctx=stockUnlockContext||stockUnlockContextForCurrent();
+  if(!ctx){showToast('Aucun rapport manquant détecté.');return false}
+  const isMatin=unlockIsMatinStock();
+  const askProductPertes=unlockNeedsPertes();
+  let ok=true;
+
+  if(ctx.requireCa){
+    ['unlock_caTotal','unlock_cmdTotal','unlock_caBoissons','unlock_qteBoissons','unlock_caDesserts','unlock_qteDesserts'].forEach(id=>{const el=$(id);if(el&&!String(el.value||'').trim()){markInvalid(el,true);ok=false}});
+  }
+
+  if(ctx.requirePertes){
+    ['unlock_montantErreurs','unlock_montantPertes'].forEach(id=>{const el=$(id);if(el&&!String(el.value||'').trim()){markInvalid(el,true);ok=false}});
+  }
+
+  if(ctx.requireStock){
+    stockProducts.forEach(p=>{
+      [`unlock_${p.id}_kg`,`unlock_${p.id}_sachets`,`unlock_${p.id}_cartons`].forEach(id=>{const el=$(id);if(el&&!String(el.value||'').trim()){markInvalid(el,true);ok=false}});
+      if(askProductPertes){const el=$(`unlock_${p.id}_pertesKg`);if(el&&!String(el.value||'').trim()){markInvalid(el,true);ok=false}}
+      if(isMatin){
+        const liv=$(`unlock_${p.id}_livraison`);
+        if(liv&&!String(liv.value||'').trim()){markInvalid(liv,true);ok=false}
+        if(unlockVal(`unlock_${p.id}_livraison`)==='Oui'){
+          const el=$(`unlock_${p.id}_livraisonCartons`);
+          if(el&&!String(el.value||'').trim()){markInvalid(el,true);ok=false}
+        }
+      }
+    });
+  }
+
+  if(ctx.requireHuile){
+    const huile=$('unlock_huileChangement');
+    if(huile&&!String(huile.value||'').trim()){markInvalid(huile,true);ok=false}
+    if(unlockVal('unlock_huileChangement')==='Oui'){
+      const date=$('unlock_huileDate');
+      if(date&&!String(date.value||'').trim()){markInvalid(date,true);ok=false}
+      if(!qsa('[data-unlock-friteuse]:checked').length){markInvalid($('unlock_huileFriteusesWrap'),true);ok=false}
+    }
+  }
+
+  const otp=val('stockUnlockOtp').replace(/\D/g,'');
+  if(!/^\d{6}$/.test(otp)){markInvalid($('stockUnlockOtp'),true);ok=false}
+  if(!ok)showToast('Complète les champs obligatoires et le code Google Authenticator à 6 chiffres.');
+  return ok;
+}
+function collectStockUnlockOnlyPayload(){
+  const ctx=stockUnlockContext||stockUnlockContextForCurrent();
+  const isMatin=unlockIsMatinStock();
+  const askProductPertes=unlockNeedsPertes();
+  const stocks=stockProducts.map(p=>{
+    const pertesKg=askProductPertes?unlockNum(`unlock_${p.id}_pertesKg`):0;
+    return {
+      produit:p.label,
+      codeProduit:p.id,
+      typeStock:isMatin?'Stock Matin saisi pour déblocage':'Stock final Soir de la veille saisi pour déblocage',
+      kgSaisi:unlockNum(`unlock_${p.id}_kg`),
+      sachets:unlockNum(`unlock_${p.id}_sachets`),
+      cartons:unlockNum(`unlock_${p.id}_cartons`),
+      cartonKg:p.cartonKg,
+      sachetKg:p.sachetKg,
+      livraison:isMatin?unlockVal(`unlock_${p.id}_livraison`):'Non applicable',
+      livraisonCartons:isMatin&&unlockVal(`unlock_${p.id}_livraison`)==='Oui'?unlockNum(`unlock_${p.id}_livraisonCartons`):0,
+      pertesKg,
+      pertesKgSaisie:pertesKg,
+      pertesKgService:pertesKg,
+      pertesKgMatinDeduit:0,
+      totalKg:stockUnlockTotalKg(p)
+    };
+  });
+
+  const caTotal=unlockNum('unlock_caTotal');
+  const cmdTotal=unlockNum('unlock_cmdTotal');
+  const caBlock=ctx.requireCa?{
+    global:{ca:caTotal,commandes:cmdTotal,ticketMoyenGlobal:cmdTotal?Math.round((caTotal/cmdTotal)*100)/100:0},
+    boissons:{ca:unlockNum('unlock_caBoissons'),quantite:unlockNum('unlock_qteBoissons')},
+    desserts:{ca:unlockNum('unlock_caDesserts'),quantite:unlockNum('unlock_qteDesserts')},
+    uber:{ca:unlockNum('unlock_caUber'),commandes:unlockNum('unlock_cmdUber')},
+    deliveroo:{ca:unlockNum('unlock_caDeliveroo'),commandes:unlockNum('unlock_cmdDeliveroo')},
+    clickCollect:{ca:unlockNum('unlock_caCC'),commandes:unlockNum('unlock_cmdCC')},
+    bornesEtCaisseCalcule:{ca:unlockCaBornesCalc(),commandes:unlockCmdBornesCalc()}
+  }:{};
+
+  const pertesBlock={
+    nombreErreurs:ctx.requirePertes?unlockNum('unlock_nbErreurs'):0,
+    montantErreursSaisie:ctx.requirePertes?unlockNum('unlock_montantErreurs'):0,
+    montantErreurs:ctx.requirePertes?unlockNum('unlock_montantErreurs'):0,
+    montantErreursService:ctx.requirePertes?unlockNum('unlock_montantErreurs'):0,
+    montantPertesSaisie:ctx.requirePertes?unlockNum('unlock_montantPertes'):0,
+    montantPertes:ctx.requirePertes?unlockNum('unlock_montantPertes'):0,
+    montantPertesService:ctx.requirePertes?unlockNum('unlock_montantPertes'):0,
+    montantTotalSaisie:ctx.requirePertes?unlockPertesTotalCalc():0,
+    montantTotalCalcule:ctx.requirePertes?unlockPertesTotalCalc():0,
+    pertesParProduit:stocks.map(s=>({produit:s.produit,codeProduit:s.codeProduit,pertesKg:s.pertesKg,pertesKgService:s.pertesKgService,pertesKgSaisie:s.pertesKgSaisie,pertesKgMatinDeduit:0})),
+    totalPertesProduitsKg:stocks.reduce((t,s)=>t+(parseFloat(s.pertesKg)||0),0),
+    totalPertesProduitsKgSaisie:stocks.reduce((t,s)=>t+(parseFloat(s.pertesKgSaisie)||0),0)
+  };
+
+  const consommationHuiles={
+    changementHuile:ctx.requireHuile?unlockVal('unlock_huileChangement'):'Non',
+    jourChangement:ctx.requireHuile&&unlockVal('unlock_huileChangement')==='Oui'?unlockVal('unlock_huileDate'):'',
+    friteuses:ctx.requireHuile&&unlockVal('unlock_huileChangement')==='Oui'?qsa('[data-unlock-friteuse]:checked').map(x=>x.value):[]
+  };
+
+  return {
+    action:'stockUnlockOnly',
+    meta:{
+      dateService:ctx.dateService,
+      restaurant:restoLabel(),
+      restaurantCode:ctx.restaurantCode,
+      responsable:val('responsable'),
+      service:ctx.service,
+      currentServiceBlocked:ctx.currentService,
+      stockUnlockLabel:ctx.label,
+      unlockKind:ctx.kind,
+      totpCode:val('stockUnlockOtp').replace(/\D/g,''),
+      createdAt:new Date().toISOString()
+    },
+    donneesService:{
+      ca:caBlock,
+      stocks,
+      pertesService:pertesBlock,
+      consommationHuiles
+    }
+  };
+}
 async function sendStockUnlockOnly(){
   if(isSendingStockUnlock)return;
   if(!validateStockUnlockForm())return;
@@ -406,8 +681,8 @@ async function sendStockUnlockOnly(){
     btn.textContent='Envoi en cours...';
   }
 
-  setUnlockMessage('Envoi du stock en cours, ne quitte pas cette page...', 'warn');
-  setSendStatus('Envoi du stock de déblocage en cours...', 'warn');
+  setUnlockMessage('Envoi en cours, ne quitte pas cette page...', 'warn');
+  setSendStatus('Envoi du déblocage en cours...', 'warn');
 
   try{
     if(APPS_SCRIPT_URL){
@@ -424,7 +699,7 @@ async function sendStockUnlockOnly(){
       const delays=[350,650,900,1200,1600,2200];
 
       for(let i=0;i<delays.length;i++){
-        setUnlockMessage(`Stock envoyé, confirmation Google Sheets... ${i+1}/${delays.length}`, 'warn');
+        setUnlockMessage(`Données envoyées, confirmation Google Sheets... ${i+1}/${delays.length}`, 'warn');
         await new Promise(resolve=>setTimeout(resolve,delays[i]));
 
         confirmed=await checkStockUnlockOnServer(d,r,s,true);
@@ -435,11 +710,11 @@ async function sendStockUnlockOnly(){
 
       if(!(confirmed&&confirmed.exists)){
         setUnlockMessage(
-          'Stock non confirmé. Le plus souvent : code Google Authenticator incorrect, Apps Script non redéployé en nouvelle version, ou APPS_SCRIPT_URL pas à jour.'+(lastError?' Détail : '+lastError:''),
+          'Déblocage non confirmé. Le plus souvent : code Google Authenticator incorrect, Apps Script non redéployé en nouvelle version, ou APPS_SCRIPT_URL pas à jour.'+(lastError?' Détail : '+lastError:''),
           'danger'
         );
-        setSendStatus('Stock non confirmé : vérifie le code ou le déploiement Apps Script, puis réessaie.','warn');
-        showToast('Stock non confirmé.');
+        setSendStatus('Déblocage non confirmé : vérifie le code ou le déploiement Apps Script, puis réessaie.','warn');
+        showToast('Déblocage non confirmé.');
         return;
       }
 
@@ -452,7 +727,7 @@ async function sendStockUnlockOnly(){
     stockUnlockContext=null;
 
     setSendStatus(label+' enregistré. La période en cours est débloquée.','ok');
-    showToast(label+' envoyé, tu peux envoyer le rapport.');
+    showToast('Déblocage validé, tu peux envoyer le rapport.');
 
     updateSubmitButtonState();
 
@@ -462,13 +737,13 @@ async function sendStockUnlockOnly(){
       'Erreur technique pendant l’envoi. Les données restent à l’écran, tu peux réessayer. Vérifie la connexion et le déploiement Apps Script.',
       'danger'
     );
-    setSendStatus('Erreur pendant l’envoi du stock. Les données restent à l’écran.','warn');
-    showToast('Erreur envoi stock.');
+    setSendStatus('Erreur pendant l’envoi. Les données restent à l’écran.','warn');
+    showToast('Erreur envoi déblocage.');
   }finally{
     isSendingStockUnlock=false;
     if(btn){
       btn.disabled=false;
-      btn.textContent='Envoyer le stock et débloquer';
+      btn.textContent='Envoyer et débloquer';
     }
   }
 }
