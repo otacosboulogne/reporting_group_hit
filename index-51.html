@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Reporting Compétition Restaurants - Blocs séparés V15</title>
+<style>
+:root{
+  --orange:#ff7900;--orange2:#ffb000;--blue:#102a56;--navy:#071528;--bg:#f4f7fb;--card:#ffffff;--text:#172033;--muted:#667085;--line:#dbe4f0;--soft:#f8fafc;--success:#16a34a;--danger:#dc2626;--warn:#f59e0b;--shadow:0 18px 45px rgba(16,42,86,.10);--radius:20px;
+}
+*{box-sizing:border-box}html,body{margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif;background:radial-gradient(circle at top left,rgba(255,121,0,.12),transparent 28%),linear-gradient(180deg,#eef4ff 0%,#fff8ef 45%,#f8fafc 100%);color:var(--text);font-size:13px}.app{max-width:1220px;margin:auto;padding:14px 12px 110px}.hero{position:relative;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;border-radius:28px;padding:20px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px}.hero:before{content:"";position:absolute;right:-80px;top:-90px;width:280px;height:280px;border-radius:999px;background:rgba(255,121,0,.22)}.hero-content{position:relative;z-index:1}.brand{display:flex;align-items:center;justify-content:space-between;gap:16px}.brand-left{display:flex;align-items:center;gap:14px}.logo{width:58px;height:58px;border-radius:18px;background:#000;display:grid;place-items:center;border:1px solid rgba(255,255,255,.18);font-weight:1000;font-size:12px;letter-spacing:.2px}.title h1{margin:0;font-size:24px;line-height:1.05}.title p{margin:6px 0 0;color:#cbd5e1;font-size:12px;font-weight:800}.version{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);padding:9px 12px;border-radius:999px;font-size:11px;font-weight:1000;white-space:nowrap}.competition{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.score-card{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:14px}.score-card span{display:block;color:#cbd5e1;text-transform:uppercase;letter-spacing:.35px;font-size:10px;font-weight:1000}.score-card strong{display:block;margin-top:5px;font-size:22px}.score-card small{display:block;margin-top:4px;color:#e5e7eb;font-size:11px;font-weight:800}.progress-wrap{height:9px;background:rgba(255,255,255,.16);border-radius:99px;overflow:hidden;margin-top:15px}.progress{height:100%;width:0;background:linear-gradient(90deg,var(--orange),var(--orange2));transition:.25s}.progress-text{margin-top:8px;color:#e5e7eb;font-size:11px;font-weight:1000}.panel,.block{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.panel{padding:14px;margin-bottom:12px}.block{padding:16px;margin-bottom:12px}.block.hidden,.hidden{display:none!important}.section-gate{border:1px dashed #cbd5e1;background:rgba(255,255,255,.72);border-radius:20px;padding:16px;text-align:center;color:var(--muted);font-weight:850}.controls{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.field{display:flex;flex-direction:column;gap:5px;min-width:0}label{font-size:11px;color:var(--blue);font-weight:950;line-height:1.25}input,select,textarea{width:100%;border:1.3px solid var(--line);border-radius:14px;padding:10px 11px;background:#fff;color:var(--text);outline:none;font:inherit;font-size:13px;font-weight:750;min-height:42px}textarea{min-height:82px;resize:vertical;line-height:1.45}input:focus,select:focus,textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,121,0,.13)}.invalid{border-color:var(--danger)!important;box-shadow:0 0 0 3px rgba(220,38,38,.12)!important}.block-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px}.block-title{margin:0;color:var(--blue);font-size:18px;font-weight:1000}.block-help{margin-top:4px;color:var(--muted);font-size:11px;font-weight:750}.badge{background:#eef4ff;color:var(--blue);border:1px solid #dbeafe;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:1000;white-space:nowrap}.badge.orange{background:#fff2e6;color:#9a4a00;border-color:#fed7aa}.badge.ok{background:#ecfdf5;color:#166534;border-color:#bbf7d0}.note{margin-top:10px;border-radius:14px;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;padding:10px;font-weight:850;font-size:11px}.note.warn{background:#fff7ed;border-color:#fed7aa;color:#9a3412}.note.danger{background:#fef2f2;border-color:#fecaca;color:#991b1b}.repeat-list{display:grid;gap:9px;margin-top:10px}.repeat-row{border:1px dashed #cbd5e1;background:#fbfdff;border-radius:16px;padding:12px}.repeat-head{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--blue);font-weight:1000;margin-bottom:10px}.mini-btn{border:0;border-radius:12px;background:#eef2f7;color:var(--blue);font-weight:1000;padding:9px 11px;cursor:pointer;font-size:11px}.mini-btn.primary{background:#fff2e6;color:#9a4a00}.mini-btn.danger{background:#fee2e2;color:#991b1b}.stock-card{background:#fbfdff;border:1px solid var(--line);border-radius:18px;padding:13px}.stock-card h3{margin:0 0 10px;color:var(--blue);font-size:15px}.stock-total{background:#eef2f7;border:1px solid #d9e2ec;border-radius:14px;padding:10px;color:#475569;font-weight:1000}.stock-total span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.35px;color:#64748b}.stock-total strong{display:block;margin-top:4px;color:var(--blue);font-size:16px}.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.scale label{cursor:pointer}.scale input{display:none}.scale span{display:grid;place-items:center;border:1.3px solid var(--line);border-radius:13px;background:#fff;color:var(--blue);font-size:13px;font-weight:1000;min-height:40px}.scale input:checked+span{border-color:var(--orange);background:#fff2e6;color:#9a4a00}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.summary-item{background:#fff;border:1px solid var(--line);border-radius:18px;padding:13px;box-shadow:var(--shadow)}.summary-item span{display:block;color:var(--muted);font-size:10px;font-weight:1000;text-transform:uppercase;letter-spacing:.35px}.summary-item strong{display:block;margin-top:5px;color:var(--blue);font-size:20px}.bottom{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom))}.bottom-inner{max-width:1220px;margin:auto;display:flex;gap:9px}.btn{border:0;border-radius:15px;padding:13px 14px;font-size:13px;font-weight:1000;cursor:pointer}.btn-light{background:#eef2f7;color:var(--blue);flex:1}.btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange2));color:#fff;flex:2}.btn:disabled{opacity:.55;cursor:not-allowed;filter:grayscale(.35)}.send-status{max-width:1220px;margin:8px auto 0;color:var(--blue);font-size:11px;font-weight:1000;text-align:center;display:none}.send-status.show{display:block}.send-status.warn{color:#9a3412}.send-status.ok{color:#166534}.toast{position:fixed;right:16px;bottom:86px;background:#071528;color:#fff;padding:12px 14px;border-radius:14px;box-shadow:var(--shadow);font-weight:900;display:none;z-index:50}.toast.show{display:block}.hero-meta{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.hero-meta strong{font-size:19px}.hero-meta span{display:block;color:#cbd5e1;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.35px}.calc-field input{background:#eef2f7;color:#102a56}.sub-card{border:1px solid var(--line);background:#fbfdff;border-radius:18px;padding:14px}.sub-title{margin:0 0 10px;color:var(--blue);font-size:15px;font-weight:1000}.soft-separator{height:1px;background:var(--line);margin:16px 0}.disabled-info{opacity:.72}.check-list{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.check-list label{display:flex;align-items:center;gap:8px;border:1.3px solid var(--line);border-radius:13px;background:#fff;padding:10px 11px;color:var(--blue);font-weight:950;cursor:pointer}.check-list input{width:auto;min-height:auto}.check-list label:has(input:checked){border-color:var(--orange);background:#fff2e6;color:#9a4a00}.date-secret-wrap{position:relative}.date-secret-btn{position:absolute;right:7px;bottom:7px;width:16px;height:16px;border:0;border-radius:999px;background:rgba(16,42,86,.10);opacity:.10;cursor:pointer;padding:0}.date-secret-btn:hover,.date-secret-btn:focus{opacity:.28;background:rgba(255,121,0,.20);outline:none}.date-secret-panel{display:none;position:absolute;right:0;top:100%;z-index:80;margin-top:7px;width:210px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:8px}.date-secret-panel.show{display:block}.date-secret-panel input{min-height:36px;padding:8px 10px;font-size:12px}.dependency-overlay{position:fixed;inset:0;z-index:9999;background:rgba(7,21,40,.94);display:none;align-items:center;justify-content:center;padding:18px}.dependency-overlay.show{display:flex}.dependency-modal{width:min(560px,100%);background:#fff;border:1px solid rgba(255,255,255,.18);border-radius:24px;box-shadow:0 24px 70px rgba(0,0,0,.35);padding:22px;text-align:center}.dependency-icon{width:58px;height:58px;border-radius:999px;background:#fff2e6;color:#9a4a00;display:grid;place-items:center;margin:0 auto 12px;font-size:27px;font-weight:1000}.dependency-modal h2{margin:0;color:var(--blue);font-size:23px;font-weight:1000;line-height:1.15}.dependency-modal p{margin:12px 0 0;color:#334155;font-size:14px;font-weight:850;line-height:1.45}.dependency-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.dependency-actions .btn{width:100%;min-height:48px}.dependency-actions .btn-primary{flex:initial}.dependency-actions .btn-light{flex:initial}@media(max-width:620px){.dependency-actions{grid-template-columns:1fr}.dependency-modal{padding:18px}.dependency-modal h2{font-size:20px}}@media(max-width:980px){.controls,.grid-4,.summary{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:1fr 1fr}.competition{grid-template-columns:1fr}}@media(max-width:620px){.brand{align-items:flex-start}.brand,.brand-left{flex-direction:column}.controls,.grid-4,.grid-3,.grid-2,.summary{grid-template-columns:1fr}.title h1{font-size:21px}.app{padding-left:10px;padding-right:10px}.block{padding:13px}.scale{grid-template-columns:repeat(5,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-meta">
+        <div><span>Restaurant en cours</span><strong id="heroRestaurant">-</strong></div>
+        <div><span>Date du service</span><strong id="heroDate">-</strong></div>
+      </div>
+      <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+      <div class="progress-text" id="progressText">Renseigne les informations communes pour afficher le formulaire.</div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="block-head"><div><h2 class="block-title">Informations communes</h2><div class="block-help">Ces informations déclenchent l'affichage du rapport Matin ou Soir.</div></div><span class="badge orange">Obligatoire</span></div>
+    <div class="controls">
+      <div class="field date-secret-wrap"><label>Date du service *</label><input type="date" id="dateService" required><button class="date-secret-btn" id="dateUnlockBtn" type="button" tabindex="-1" aria-hidden="true"></button><div class="date-secret-panel" id="dateUnlockPanel"><input type="password" id="dateUnlockPassword" autocomplete="off"></div></div>
+      <div class="field"><label>Restaurant *</label><select id="restaurant" required><option value="">Choisir le restaurant</option><option value="boulogne">Boulogne-sur-Mer</option><option value="armentieres">Armentières</option></select></div>
+      <div class="field"><label>Nom du responsable *</label><select id="responsable" required disabled><option value="">Choisir d'abord le restaurant</option></select></div>
+      <div class="field"><label>Service *</label><select id="service" required><option value="">Choisir le service</option><option value="matin">Matin</option><option value="soir">Soir</option></select></div>
+    </div>
+    <div class="note" id="gateNote">La date n'est pas préremplie volontairement pour éviter les problèmes de date après la fermeture à 00h00.</div>
+  </section>
+
+  <div id="locked" class="section-gate">Le rapport s'affichera dès que la date, le restaurant, le responsable et le service seront renseignés.</div>
+
+  <div id="mainForm" class="hidden">
+    <div class="summary">
+      <div class="summary-item"><span>CA global service</span><strong id="sumCA">0,00 €</strong></div>
+      <div class="summary-item"><span>Commandes globales</span><strong id="sumCmd">0</strong></div>
+      <div class="summary-item"><span>Ticket moyen global</span><strong id="sumTicketMoyen">0,00 €</strong></div>
+      <div class="summary-item"><span>Erreurs + pertes</span><strong id="sumPertes">0,00 €</strong></div>
+    </div>
+
+    <form id="form" novalidate>
+      <section class="block report report-matin">
+        <div class="block-head"><div><h2 class="block-title">Service — activité commerciale</h2><div class="block-help"> CA Matin = les totaux- ticket Z à la passation de sevice & Soir = les totaux- ticket Z à la fermeture.</div></div><span class="badge ok">CA</span></div>
+        <div class="grid-4">
+          <div class="field"><label>CA global - Ticket Z *</label><input type="number" step="0.01" min="0" id="caTotal" placeholder="CA toutes plateformes"></div>
+          <div class="field"><label>Nbr global de commandes - ticket Z*</label><input type="number" step="1" min="0" id="cmdTotal" placeholder="Commandes toutes plateformes"></div>
+          <div class="field"><label>CA total boissons *</label><input type="number" step="0.01" min="0" id="caBoissons" placeholder="CA boissons"></div>
+          <div class="field"><label>Quantité total boissons vendues *</label><input type="number" step="1" min="0" id="qteBoissons" placeholder="Nombre vendu"></div>
+          <div class="field"><label>CA total desserts *</label><input type="number" step="0.01" min="0" id="caDesserts" placeholder="CA desserts"></div>
+          <div class="field"><label>Quantité total desserts vendus *</label><input type="number" step="1" min="0" id="qteDesserts" placeholder="Nombre vendu"></div>
+          <div class="field"><label>CA Uber Eats - Ticket Z</label><input type="number" step="0.01" min="0" id="caUber"></div>
+          <div class="field"><label>Nbr Commandes Uber Eats - Ticket Z</label><input type="number" step="1" min="0" id="cmdUber"></div>
+          <div class="field"><label>CA Deliveroo - Ticket Z</label><input type="number" step="0.01" min="0" id="caDeliveroo"></div>
+          <div class="field"><label>Nbr Commandes Deliveroo - Ticket Z</label><input type="number" step="1" min="0" id="cmdDeliveroo"></div>
+          <div class="field"><label>CA Click & Collect - Ticket Z</label><input type="number" step="0.01" min="0" id="caCC"></div>
+          <div class="field"><label>Nbr Commandes C&C - Ticket Z</label><input type="number" step="1" min="0" id="cmdCC"></div>
+          <div class="field calc-field"><label>CA Bornes & caisse calculé - à vérifier</label><input id="caBornes" readonly></div>
+          <div class="field calc-field"><label>Commandes Bornes & caisse calculées - à vérifier</label><input id="cmdBornes" readonly></div>
+        </div>
+        <div class="note" id="caLogicNote">Le CA Bornes & Caisse est calculé automatiquement. Boulogne : déduction Uber + Deliveroo + Click & Collect. Armentières : déduction Click & Collect uniquement car Uber/Deliveroo ne sont pas dans le Ticket Z global. Le soir reste en cumul journée.</div>
+      </section>
+
+      <section class="block report report-matin">
+        <div class="block-head"><div><h2 class="block-title">Service — réductions & commandes refaites</h2><div class="block-help">plusieurs commandes possibles à saisir.</div></div><span class="badge">Gestion client</span></div>
+        <div class="grid-2">
+          <div class="field"><label>Réduction appliquée aux clients ?</label><select id="hasReductions"><option value="">Choisir</option><option>Non</option><option>Oui</option></select></div>
+          <div class="field"><label>Commande refaite à un client ?</label><select id="hasRefaits"><option value="">Choisir</option><option>Non</option><option>Oui</option></select></div>
+        </div>
+        <div id="redWrap" class="hidden"><div class="block-head" style="margin-top:12px;margin-bottom:0"><h2 class="block-title">Réductions</h2><button type="button" class="mini-btn primary" onclick="addReduction()">+ Ajouter une commande</button></div><div class="repeat-list" id="redList"></div></div>
+        <div id="refaitWrap" class="hidden"><div class="block-head" style="margin-top:12px;margin-bottom:0"><h2 class="block-title">Commandes refaites</h2><button type="button" class="mini-btn primary" onclick="addRefait()">+ Ajouter une commande</button></div><div class="repeat-list" id="refaitList"></div></div>
+      </section>
+
+      <section class="block report report-matin">
+        <div class="block-head"><div><h2 class="block-title">Service — pertes du service</h2><div class="block-help">À saisir depuis INPULSE (important de tout saisir).</div></div><span class="badge orange">Pertes</span></div>
+        <div class="grid-4">
+          <div class="field"><label>Nombre d'erreurs</label><input type="number" step="1" min="0" id="nbErreurs"></div>
+          <div class="field"><label>Montant des erreurs</label><input type="number" step="0.01" min="0" id="montantErreurs"></div>
+          <div class="field"><label>Montant des pertes</label><input type="number" step="0.01" min="0" id="montantPertes"></div>
+          <div class="field calc-field"><label>Total erreurs + pertes</label><input id="totalPertesService" readonly></div>
+        </div>
+        <div id="erreursResponsablesWrap" class="hidden" style="margin-top:12px">
+          <div class="block-head" style="margin-bottom:0"><h2 class="block-title">Responsables des erreurs</h2><span class="badge orange">Obligatoire si erreur</span></div>
+          <div class="repeat-list" id="erreursResponsablesList"></div>
+        </div>
+      </section>
+
+      <section class="block report report-matin" id="huilesSection">
+        <div class="block-head"><div><h2 class="block-title">Service — changement des huiles</h2><div class="block-help">À saisir uniquement si une friteuse a été changée. Le Sheet calcule ensuite l’intervalle par restaurant et par friteuse.</div></div><span class="badge orange">Huiles</span></div>
+        <div class="grid-2">
+          <div class="field"><label>Changement d'huile effectué ? *</label><select id="huileChangement"><option value="">Choisir</option><option>Non</option><option>Oui</option></select></div>
+          <div class="field hidden" id="huileDateWrap"><label>Jour du changement d'huile</label><input type="date" id="huileDate"></div>
+        </div>
+        <div class="field hidden" id="huileFriteusesWrap" style="margin-top:10px"><label>Friteuse(s) concernée(s) *</label><div class="check-list" id="huileFriteusesList"></div></div>
+      </section>
+
+      <section class="block report report-matin">
+        <div class="block-head"><div><h2 class="block-title">Service — RH & organisation du rush</h2><div class="block-help"></div></div><span class="badge orange">RH</span></div>
+        <div class="grid-2">
+          <div class="sub-card">
+            <h3 class="sub-title">Planning & heures supplémentaires</h3>
+            <div class="grid-3">
+              <div class="field"><label>Heures prévues dans le planning - les heures de tout le monde à l'ouverture jusqu'à 16h (R Matin) et le total en fermeture (R Soir) *</label><input type="number" step="0.01" min="0" id="heuresPrevuesPlanning" placeholder="Ex : 18,50"></div>
+              <div class="field calc-field"><label>Heures réelles calculées</label><input id="heuresReellesCalc" readonly></div>
+              <div class="field"><label>Heures supplémentaires rajoutées ? (Rapport heures supp)</label><select id="hasHeuresSupp"><option value="">Choisir</option><option>Non</option><option>Oui</option></select></div>
+            </div>
+            <div id="hsWrap" class="hidden"><div class="block-head" style="margin-top:12px;margin-bottom:0"><h2 class="block-title">Équipiers avec heures supplémentaires</h2><button type="button" class="mini-btn primary" onclick="addHeureSupp()">+ Ajouter un équipier</button></div><div class="repeat-list" id="hsList"></div></div>
+          </div>
+          <div class="sub-card">
+            <h3 class="sub-title">Temps d'attente</h3>
+            <div class="field"><label>Temps d'attente le plus élevé du service (le pic du service sur le KDS) *</label><input type="number" step="1" min="0" id="tempsAttente" placeholder="Minutes"></div>
+            <div class="field hidden" id="expAttenteWrap" style="margin-top:10px"><label>Explication obligatoire si temps d'attente &gt; 10 min</label><textarea id="expAttente" placeholder="Cause du temps d'attente et action corrective."></textarea></div>
+          </div>
+        </div>
+        <div class="soft-separator"></div>
+        <div class="grid-3">
+          <div class="field"><label>Salarié aux fritures</label><select class="employeeSelect" id="placeFriture"></select></div>
+          <div class="field"><label>Salarié à l'envoi</label><select class="employeeSelect" id="placeEnvoi"></select></div>
+          <div class="field"><label>Salarié au pliage</label><select class="employeeSelect" id="placePliage"></select></div>
+          <div class="field"><label>Salarié au toaster</label><select class="employeeSelect" id="placeToaster"></select></div>
+          <div class="field"><label>Salarié à la caisse</label><select class="employeeSelect" id="placeCaisse"></select></div>
+        </div>
+      </section>
+
+      <section class="block report report-matin">
+        <div class="block-head"><div><h2 class="block-title">Service — stock</h2><div class="block-help">Matin = inventaire initial + livraison. Soir = stock final restant. Saisir les pertes en kg par produit.</div></div><span class="badge">Stock produits</span></div>
+        <div class="grid-3" id="stockGrid"></div>
+        <div class="grid-3" id="stockTotals" style="margin-top:12px"></div>
+      </section>
+
+      <section class="block report report-matin">
+        <div class="block-head"><div><h2 class="block-title">Service — appréciation du service</h2><div class="block-help">Note sur 5. Si la note est inférieure à 4, une explication est demandée.</div></div><span class="badge ok">Évaluation</span></div>
+        <div class="grid-3">
+          <div class="field"><label>Fluidité du rush *</label><div class="scale" data-scale="fluidite"></div></div>
+          <div class="field"><label>Qualité de la prépa de service *</label><div class="scale" data-scale="qualite"></div></div>
+          <div class="field"><label>Satisfaction client *</label><div class="scale" data-scale="satisfaction"></div></div>
+          <div class="field"><label>Évaluation du placement *</label><div class="scale" data-scale="placement"></div></div>
+          <div class="field"><label>Motivation de l'équipe *</label><div class="scale" data-scale="motivation"></div></div>
+          <div class="field"><label>Récupération de service *</label><div class="scale" data-scale="recuperation"></div></div>
+        </div>
+        <div class="grid-3" style="margin-top:10px">
+          <div class="field hidden" id="expFluiditeWrap"><label>Explication fluidité si note &lt; 4</label><textarea id="expFluidite"></textarea></div>
+          <div class="field hidden" id="expQualiteWrap"><label>Explication qualité si note &lt; 4</label><textarea id="expQualite"></textarea></div>
+          <div class="field hidden" id="expSatisfactionWrap"><label>Explication satisfaction si note &lt; 4</label><textarea id="expSatisfaction"></textarea></div>
+          <div class="field hidden" id="expPlacementWrap"><label>Explication placement si note &lt; 4</label><textarea id="expPlacement"></textarea></div>
+          <div class="field hidden" id="expMotivationWrap"><label>Explication motivation si note &lt; 4</label><textarea id="expMotivation"></textarea></div>
+          <div class="field hidden" id="expRecuperationWrap"><label>Explication récupération de service si note &lt; 4</label><textarea id="expRecuperation"></textarea></div>
+        </div>
+        <div class="grid-2" style="margin-top:10px">
+          <div class="field"><label>Point fort du service</label><textarea id="pointFort" placeholder="Ce qui a bien fonctionné pendant le service."></textarea></div>
+          <div class="field"><label>Points à améliorer pour le prochain service</label><textarea id="amelioration" placeholder="Action concrète à prévoir au prochain service."></textarea></div>
+        </div>
+      </section>
+    </form>
+  </div>
+</div>
+
+<div class="bottom"><div class="bottom-inner"><button class="btn btn-light" type="button" onclick="resetForm()">Réinitialiser</button><button class="btn btn-light" id="saveDraftBtn" type="button" onclick="saveLocal()">Enregistrer le brouillon</button><button class="btn btn-primary" id="validateBtn" type="button" onclick="validateReport()">Valider le rapport</button></div><div class="send-status" id="sendStatus"></div></div>
+<div class="toast" id="toast"></div>
+<div class="dependency-overlay" id="morningDependencyOverlay" role="dialog" aria-modal="true" aria-labelledby="morningDependencyTitle">
+  <div class="dependency-modal">
+    <div class="dependency-icon">!</div>
+    <h2 id="morningDependencyTitle">Le rapport de la veille n’est pas fait</h2>
+    <p id="morningDependencyText">Informe Omar que le rapport de la veille n’est pas fait. Ensuite, tu peux commencer à remplir le rapport en cliquant sur « Skipper et remplir le rapport ». Après remplissage, enregistre le rapport en brouillon. Il ne faut pas vider le cache : les données restent stockées. Il faut juste attendre l’accord d’Omar avant de l’envoyer.</p>
+    <div class="dependency-actions">
+      <button class="btn btn-light" type="button" onclick="closeMorningDependencyWarning()">Retour</button>
+      <button class="btn btn-primary" type="button" onclick="skipMorningDependencyWarningAndSend()">Skipper et remplir le rapport</button>
+    </div>
+  </div>
+</div>
+<div class="dependency-overlay" id="morningDraftOverlay" role="dialog" aria-modal="true" aria-labelledby="morningDraftTitle">
+  <div class="dependency-modal">
+    <div class="dependency-icon">!</div>
+    <h2 id="morningDraftTitle">Brouillon enregistré — attente accord Omar</h2>
+    <p id="morningDraftText">Le rapport n’a pas été envoyé. Il est enregistré en brouillon dans ce téléphone. Dès qu’Omar donne son accord à l’oral, clique directement sur « Envoyer maintenant ».</p>
+    <div class="dependency-actions">
+      <button class="btn btn-light" type="button" onclick="closeMorningDraftOverlay()">Retour au rapport</button>
+      <button class="btn btn-primary" type="button" onclick="sendMorningDraftAfterOmar()">Envoyer maintenant</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbxfcrxqYGp7hxfxIPbHn48lSecL0xnyLJOMokuXQq4IWaUtZQ-hN8xafxs3mPq5AUUoZw/exec';
+const DATE_UNLOCK_PASSWORD='Otacos2026!';
+const $=id=>document.getElementById(id);const qsa=s=>[...document.querySelectorAll(s)];
+const responsables={boulogne:['Imane','Guillaume','Pape','Omar'],armentieres:['Imane','Anouar','Babacar','Omar']};
+const employeesFallback={boulogne:['Guillaume','Pape','David','Said','Hossam','Fanny','Ibrahima','Usman','Yassine','Christopher'],armentieres:['Babacar','Anouar','Bimata','Adnan','Moussa','ZabiUllah','Ousmane','Younes']};
+let employees={...employeesFallback};
+const stockProducts=[{id:'frites',label:'Frites',cartonKg:10,sachetKg:2.5},{id:'merguez',label:'Merguez',cartonKg:5,sachetKg:2.5},{id:'viande',label:'Viande hachée',cartonKg:5,sachetKg:2.5},{id:'viandeKebab',label:'Viande Kebab',cartonKg:8,sachetKg:1},{id:'pouletMarine',label:'Poulet Mariné',cartonKg:10,sachetKg:2.5},{id:'pouletNature',label:'Poulet Nature',cartonKg:5,sachetKg:1}];
+const friteusesByRestaurant={boulogne:['Friteuse grande gauche','Friteuse grande droite'],armentieres:['Friteuse grande gauche','Friteuse grande droite','Friteuse petite droite','Friteuse petite gauche']};
+let reductions=[],refaits=[],heuresSupp=[],responsablesErreurs=[],huileFriteusesSelection=[];let lastStockService='';let isSendingReport=false;let morningDependencyWarningForceSend=false;let isRestoringDraft=false;let lastDraftRestoreKey='';let draftAutosaveTimer=null;let reportStatusCache={};let isCheckingReportStatus=false;let lastReportStatusCheckKey='';let reportStatusCheckTimer=null;
+function money(n){return (parseFloat(n)||0).toLocaleString('fr-FR',{style:'currency',currency:'EUR'})}function num(id){return parseFloat(($(id)?.value||'').replace(',','.'))||0}function val(id){return ($(id)?.value||'').trim()}function restoLabel(){return val('restaurant')==='boulogne'?'Boulogne-sur-Mer':val('restaurant')==='armentieres'?'Armentières':'-'}
+function showToast(msg){$('toast').textContent=msg;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)}
+function localISODate(d=new Date()){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')}
+function todayISO(){return localISODate(new Date())}
+function yesterdayISO(){const d=new Date();d.setDate(d.getDate()-1);return localISODate(d)}
+function isDateUnlocked(){return val('dateUnlockPassword')===DATE_UNLOCK_PASSWORD}
+function setDateBounds(){const min=yesterdayISO(),max=todayISO(),unlocked=isDateUnlocked();['dateService','huileDate'].forEach(id=>{const el=$(id);if(el){if(unlocked){el.removeAttribute('min');el.removeAttribute('max')}else{el.min=min;el.max=max;if(el.value&&(el.value<min||el.value>max))el.value=''}}})}
+function enforceDateRange(id,showMessage=false){setDateBounds();const el=$(id);if(!el)return true;if(isDateUnlocked())return true;const min=yesterdayISO(),max=todayISO();if(el.value&&(el.value<min||el.value>max)){el.value='';if(showMessage)showToast('Date autorisée : aujourd’hui ou hier uniquement, sauf mot de passe.');return false}return true}
+function isAllowedDate(){const d=val('dateService');return !!d&&(isDateUnlocked()||(d>=yesterdayISO()&&d<=todayISO()))}
+function isAllowedHuileDate(){const d=val('huileDate');if(val('huileChangement')!=='Oui')return true;return !!d&&(isDateUnlocked()||(d>=yesterdayISO()&&d<=todayISO()))}
+function reportUniqueKey(){return val('dateService')&&val('restaurant')&&val('service')?`competition_reporting_sent_${val('dateService')}_${val('restaurant')}_${val('service')}`:''}
+function reportHumanLabel(){return `${restoLabel()} · ${val('dateService')||'-'} · ${val('service')==='matin'?'Matin':'Soir'}`}
+function isReportAlreadySent(){
+  if(!commonComplete())return false;
+  return isReportSentFor(val('dateService'),val('restaurant'),val('service'));
+}
+function sentReportKey(dateService,restaurantCode,service){return dateService&&restaurantCode&&service?`competition_reporting_sent_${dateService}_${restaurantCode}_${service}`:''}
+function serverReportCacheKey(dateService,restaurantCode,service){return dateService&&restaurantCode&&service?`${dateService}_${restaurantCode}_${service}`:''}
+function clearReportSentLocal(dateService,restaurantCode,service){
+  const k=sentReportKey(dateService,restaurantCode,service);
+  if(!k)return;
+  localStorage.removeItem(k);
+  localStorage.removeItem(k+'_sentAt');
+  localStorage.removeItem(k+'_payload');
+}
+function isReportSentLocal(dateService,restaurantCode,service){const k=sentReportKey(dateService,restaurantCode,service);return !!k&&localStorage.getItem(k)==='sent'}
+function isReportStatusChecked(dateService,restaurantCode,service){const k=serverReportCacheKey(dateService,restaurantCode,service);return !!(k&&reportStatusCache[k]&&reportStatusCache[k].checkedAt)}
+function isReportStatusUnknown(dateService,restaurantCode,service){
+  return !!(
+    APPS_SCRIPT_URL &&
+    dateService &&
+    restaurantCode &&
+    service &&
+    !isReportStatusChecked(dateService,restaurantCode,service)
+  );
+}
+function isReportSentFor(dateService,restaurantCode,service){
+  const k=serverReportCacheKey(dateService,restaurantCode,service);
+  const cached=k?reportStatusCache[k]:null;
+
+  if(cached&&cached.checkedAt){
+    if(cached.ok===false||cached.error)return false;
+    return !!cached.exists;
+  }
+
+  return isReportSentLocal(dateService,restaurantCode,service);
+}
+function appsScriptJsonp(params={},timeoutMs=9000){
+  return new Promise((resolve,reject)=>{
+    if(!APPS_SCRIPT_URL){resolve(null);return}
+    const cb='reporting_jsonp_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+    const sep=APPS_SCRIPT_URL.includes('?')?'&':'?';
+    const query=Object.entries({...params,callback:cb,_:Date.now()}).map(([k,v])=>`${encodeURIComponent(k)}=${encodeURIComponent(v??'')}`).join('&');
+    const script=document.createElement('script');
+    let done=false;
+    const cleanup=()=>{try{delete window[cb]}catch(e){window[cb]=undefined}script.remove()};
+    const timer=setTimeout(()=>{if(done)return;done=true;cleanup();reject(new Error('Timeout vérification Google Sheets'))},timeoutMs);
+    window[cb]=(data)=>{if(done)return;done=true;clearTimeout(timer);cleanup();resolve(data||{})};
+    script.onerror=()=>{if(done)return;done=true;clearTimeout(timer);cleanup();reject(new Error('Erreur chargement Apps Script'))};
+    script.src=APPS_SCRIPT_URL+sep+query;
+    document.body.appendChild(script);
+  })
+}
+function cacheServerReportStatus(dateService,restaurantCode,service,data){
+  const cacheKey=serverReportCacheKey(dateService,restaurantCode,service);
+  if(!cacheKey)return;
+
+  const ok=data&&data.ok!==false;
+  const exists=!!(ok&&data&&data.exists);
+  const payload=data?.payload||data?.rapportPayload||null;
+
+  reportStatusCache[cacheKey]={
+    ok,
+    exists,
+    payload,
+    checkedAt:Date.now(),
+    error:!ok,
+    raw:data||null
+  };
+
+  if(ok){
+    const sentKey=sentReportKey(dateService,restaurantCode,service);
+    if(exists){
+      localStorage.setItem(sentKey,'sent');
+      localStorage.setItem(sentKey+'_sentAt',data?.sentAt||data?.createdAt||new Date().toISOString());
+      if(payload){try{localStorage.setItem(sentKey+'_payload',JSON.stringify(payload))}catch(e){}}
+    }else{
+      clearReportSentLocal(dateService,restaurantCode,service);
+    }
+  }
+}
+async function checkReportOnServer(dateService,restaurantCode,service,force=false){
+  if(!APPS_SCRIPT_URL||!dateService||!restaurantCode||!service)return null;
+  const cacheKey=serverReportCacheKey(dateService,restaurantCode,service);
+  if(!force&&reportStatusCache[cacheKey]?.checkedAt)return reportStatusCache[cacheKey];
+
+  try{
+    const data=await appsScriptJsonp({action:'checkReport',dateService,restaurantCode,service},12000);
+    cacheServerReportStatus(dateService,restaurantCode,service,data);
+  }catch(e){
+    console.error('Erreur checkReport Google Sheets',e);
+    cacheServerReportStatus(dateService,restaurantCode,service,{
+      ok:false,
+      exists:false,
+      error:String(e&&e.message?e.message:e)
+    });
+  }
+
+  return reportStatusCache[cacheKey]||null;
+}
+function dependencyStatusTargets(){
+  if(!commonComplete())return [];
+  const d=val('dateService'),r=val('restaurant'),s=val('service');
+  const targets=[{dateService:d,restaurantCode:r,service:s}];
+  if(s==='soir')targets.push({dateService:d,restaurantCode:r,service:'matin'});
+  if(s==='matin'){
+    const prev=previousDateISO(d);
+    if(prev)targets.push({dateService:prev,restaurantCode:r,service:'soir'});
+  }
+  return targets;
+}
+function hasPendingReportStatusCheck(){return dependencyStatusTargets().some(t=>isReportStatusUnknown(t.dateService,t.restaurantCode,t.service))}
+async function ensureReportStatusesFromServer(force=false){
+  if(!commonComplete()||!APPS_SCRIPT_URL)return;
+  isCheckingReportStatus=true;
+  updateSubmitButtonState();
+  try{
+    await Promise.all(dependencyStatusTargets().map(t=>checkReportOnServer(t.dateService,t.restaurantCode,t.service,force)));
+  }catch(e){
+    console.error(e);
+    setSendStatus('Vérification Google Sheets impossible pour le moment. Le formulaire reste utilisable, le brouillon est conservé.','warn');
+  }finally{
+    isCheckingReportStatus=false;
+    updateSubmitButtonState();
+  }
+}
+function scheduleReportStatusCheck(force=false){
+  if(!commonComplete()||!APPS_SCRIPT_URL)return;
+  const key=dependencyStatusTargets().map(t=>`${t.dateService}_${t.restaurantCode}_${t.service}`).join('|');
+  if(!force&&key===lastReportStatusCheckKey&&!hasPendingReportStatusCheck())return;
+  lastReportStatusCheckKey=key;
+  clearTimeout(reportStatusCheckTimer);
+  reportStatusCheckTimer=setTimeout(()=>ensureReportStatusesFromServer(force),250);
+}
+function previousDateISO(dateISO){if(!dateISO)return '';const parts=dateISO.split('-').map(Number);if(parts.length!==3||parts.some(Number.isNaN))return '';const d=new Date(parts[0],parts[1]-1,parts[2]);d.setDate(d.getDate()-1);return localISODate(d)}
+function sendDependencyMessage(){
+  if(!commonComplete())return '';
+
+  const d=val('dateService'),r=val('restaurant'),s=val('service');
+
+  if(s==='soir'){
+    const k=serverReportCacheKey(d,r,'matin');
+    const cached=k?reportStatusCache[k]:null;
+
+    if(isReportStatusUnknown(d,r,'matin'))return '';
+    if(cached&&(cached.ok===false||cached.error))return '';
+
+    if(!isReportSentFor(d,r,'matin')){
+      return `Impossible d’envoyer le rapport Soir : il faut d’abord envoyer le rapport Matin du ${d} pour ${restoLabel()}.`;
+    }
+  }
+
+  return '';
+}
+function hasMorningPreviousReportMissing(){
+  if(!commonComplete()||val('service')!=='matin')return false;
+
+  const prev=previousDateISO(val('dateService'));
+  if(!prev)return false;
+
+  const k=serverReportCacheKey(prev,val('restaurant'),'soir');
+  const cached=k?reportStatusCache[k]:null;
+
+  if(isReportStatusUnknown(prev,val('restaurant'),'soir'))return false;
+  if(cached&&(cached.ok===false||cached.error))return false;
+
+  return !isReportSentFor(prev,val('restaurant'),'soir');
+}
+function morningDependencyWarningKey(){return val('dateService')&&val('restaurant')?`competition_reporting_morning_warning_skipped_${val('dateService')}_${val('restaurant')}`:''}
+function shouldShowMorningDependencyWarning(){const k=morningDependencyWarningKey();return !!(hasMorningPreviousReportMissing()&&(!k||sessionStorage.getItem(k)!=='skipped'))}
+function morningDependencyWarningMessage(){const prev=previousDateISO(val('dateService'));return `Le rapport de la veille (${prev}) n’est pas fait pour ${restoLabel()}. Informe Omar avant de commencer le rapport. Tu peux skipper ce message pour remplir le rapport. Après validation, il sera enregistré en brouillon et l’envoi se fera uniquement après l’accord oral d’Omar.`}
+function showMorningDependencyWarning(){const overlay=$('morningDependencyOverlay'),text=$('morningDependencyText');if(text)text.textContent=morningDependencyWarningMessage();if(overlay)overlay.classList.add('show')}
+function closeMorningDependencyWarning(){const overlay=$('morningDependencyOverlay');if(overlay)overlay.classList.remove('show')}
+function skipMorningDependencyWarningAndSend(){const k=morningDependencyWarningKey();if(k)sessionStorage.setItem(k,'skipped');closeMorningDependencyWarning();setSendStatus('Rapport de la veille non fait : informe Omar. À la validation, le rapport sera gardé en brouillon jusqu’à l’accord oral d’Omar.','warn');showToast('Tu peux remplir le rapport. Il sera gardé en brouillon avant l’accord oral d’Omar.')}
+function handleMorningDependencyWarningOnCommonComplete(){if(shouldShowMorningDependencyWarning())showMorningDependencyWarning()}
+function showMorningDraftOverlay(){const overlay=$('morningDraftOverlay'),text=$('morningDraftText');if(text){const prev=previousDateISO(val('dateService'));text.textContent=`Le rapport n’a pas été envoyé. Il est enregistré en brouillon dans ce téléphone car le rapport de la veille (${prev}) n’est pas fait pour ${restoLabel()}. Dès qu’Omar donne son accord à l’oral, clique directement sur « Envoyer maintenant ».`}if(overlay)overlay.classList.add('show')}
+function closeMorningDraftOverlay(){const overlay=$('morningDraftOverlay');if(overlay)overlay.classList.remove('show')}
+function sendMorningDraftAfterOmar(){morningDependencyWarningForceSend=true;closeMorningDraftOverlay();validateReport()}
+function markReportSent(payload){const k=reportUniqueKey();if(!k)return;localStorage.setItem(k,'sent');localStorage.setItem(k+'_sentAt',new Date().toISOString());try{localStorage.setItem(k+'_payload',JSON.stringify(payload))}catch(e){}}
+function setSendStatus(msg,type=''){const el=$('sendStatus');if(!el)return;el.textContent=msg||'';el.className='send-status'+(msg?' show':'')+(type?' '+type:'')}
+function updateSubmitButtonState(){
+  const btn=$('validateBtn');
+  if(!btn)return;
+
+  btn.classList.remove('hidden');
+
+  if(isSendingReport){
+    btn.disabled=true;
+    btn.textContent='Envoi en cours...';
+    return;
+  }
+
+  if(commonComplete()&&isCheckingReportStatus){
+    btn.disabled=true;
+    btn.textContent='Vérification...';
+    setSendStatus('Vérification dans Google Sheets en cours : rapport actuel et rapports nécessaires.','warn');
+    return;
+  }
+
+  if(isReportAlreadySent()){
+    btn.disabled=true;
+    btn.textContent='Rapport déjà envoyé';
+    setSendStatus(`Ce rapport a déjà été envoyé : ${reportHumanLabel()}.`,'ok');
+    return;
+  }
+
+  const depMsg=sendDependencyMessage();
+  if(depMsg){
+    btn.disabled=true;
+    btn.textContent='Envoi bloqué';
+    setSendStatus(depMsg,'warn');
+    return;
+  }
+
+  if(hasMorningPreviousReportMissing()){
+    btn.classList.add('hidden');
+    btn.disabled=true;
+    setSendStatus('Rapport de la veille non fait : informe Omar. Le bouton envoyer est masqué. Enregistre le brouillon, puis envoie uniquement après l’accord oral d’Omar.','warn');
+    return;
+  }
+
+  btn.disabled=false;
+  btn.textContent='Valider le rapport';
+
+  if(commonComplete()&&hasPendingReportStatusCheck()){
+    setSendStatus('Vérification Google Sheets en attente. Tu peux remplir le rapport, la vérification sera relancée avant l’envoi.','warn');
+  }else{
+    setSendStatus('', '');
+  }
+} 
+function parseTimeMinutes(value){const raw=String(value||'').trim().toLowerCase();if(!raw)return null;let h=null,m=null;let match=raw.match(/^(\d{1,2})\s*(?:h|:|\.)\s*(\d{0,2})/);if(match){h=parseInt(match[1],10);m=match[2]===''?0:parseInt(match[2],10)}else{const digits=raw.replace(/\D/g,'');if(digits.length===4){h=parseInt(digits.slice(0,2),10);m=parseInt(digits.slice(2),10)}else if(digits.length===3){h=parseInt(digits.slice(0,1),10);m=parseInt(digits.slice(1),10)}else if(digits.length===1||digits.length===2){h=parseInt(digits,10);m=0}}if(h===null||m===null||Number.isNaN(h)||Number.isNaN(m))return null;if(h<0||h>23||m<0||m>59)return null;return h*60+m}
+function cleanTime(value){const mins=parseTimeMinutes(value);if(mins===null)return String(value||'').trim();const h=Math.floor(mins/60),m=mins%60;return String(h).padStart(2,'0')+'H'+String(m).padStart(2,'0')+'min'}
+function diffHours(start,end){const s=parseTimeMinutes(start),e=parseTimeMinutes(end);if(s===null||e===null)return 0;let mins=e-s;if(mins<0)mins+=24*60;return Math.round((mins/60)*100)/100}
+function isArmentieres(){return val('restaurant')==='armentieres'}
+function usesDosesVenduesProduct(p){return false}
+function caBornesCalc(){const deductions=isArmentieres()?num('caCC'):(num('caUber')+num('caDeliveroo')+num('caCC'));return Math.max(0,num('caTotal')-deductions)}
+function cmdBornesCalc(){const deductions=isArmentieres()?num('cmdCC'):(num('cmdUber')+num('cmdDeliveroo')+num('cmdCC'));return Math.max(0,num('cmdTotal')-deductions)}
+function pertesTotalCalc(){return montantErreursService()+montantPertesService()}
+function round2(n){return Math.round(((parseFloat(n)||0)+Number.EPSILON)*100)/100}
+function localPayloadKey(service){return `competition_reporting_${val('dateService')}_${val('restaurant')}_${service}`}
+function sentPayloadKey(service){return `competition_reporting_sent_${val('dateService')}_${val('restaurant')}_${service}_payload`}
+function readLocalJson(key){try{return JSON.parse(localStorage.getItem(key)||'null')}catch(e){return null}}
+function draftStorageKey(){return commonComplete()?`competition_reporting_draft_ui_${val('dateService')}_${val('restaurant')}_${val('service')}`:''}
+function collectDraftForm(){
+  const fields={};
+  qsa('input,select,textarea').forEach(el=>{if(!el.id||el.id==='dateUnlockPassword'||el.type==='radio'||el.type==='checkbox')return;fields[el.id]=el.value});
+  const scales={};['fluidite','qualite','satisfaction','placement','motivation','recuperation'].forEach(s=>scales[s]=scaleVal(s));
+  return {version:'index46_draft_v4',savedAt:new Date().toISOString(),meta:{dateService:val('dateService'),restaurant:val('restaurant'),responsable:val('responsable'),service:val('service')},fields,scales,reductions:reductions.map(x=>({...x})),refaits:refaits.map(x=>({...x})),heuresSupp:heuresSupp.map(x=>({...x})),responsablesErreurs:responsablesErreurs.slice(),huileFriteusesSelection:huileFriteusesSelection.slice()};
+}
+function saveDraftLocalSilent(payload=null){
+  if(!commonComplete()||isRestoringDraft)return false;
+  const key=draftStorageKey();
+  if(!key)return false;
+  try{
+    localStorage.setItem(key,JSON.stringify(collectDraftForm()));
+    try{localStorage.setItem(storageKey(),JSON.stringify(payload||collect()))}catch(e){}
+    return true;
+  }catch(e){console.error(e);setSendStatus('Impossible d’enregistrer le brouillon dans ce téléphone. Vérifie l’espace disponible ou le mode navigation privée.','warn');return false}
+}
+function saveDraftLocalWithMessage(){
+  if(!commonComplete()){showToast('Complète d’abord les informations communes pour enregistrer le brouillon.');return false}
+  const ok=saveDraftLocalSilent();
+  if(ok){setSendStatus('Brouillon enregistré dans ce téléphone. Même sans connexion, il reste disponible sur ce navigateur.','ok');showToast('Brouillon enregistré dans ce téléphone.')}
+  return ok;
+}
+function applyDraftForm(draft){
+  if(!draft||isRestoringDraft)return;
+  isRestoringDraft=true;
+  try{
+    reductions=Array.isArray(draft.reductions)?draft.reductions.map(x=>({...x})):[];
+    refaits=Array.isArray(draft.refaits)?draft.refaits.map(x=>({...x})):[];
+    heuresSupp=Array.isArray(draft.heuresSupp)?draft.heuresSupp.map(x=>({...x})):[];
+    responsablesErreurs=Array.isArray(draft.responsablesErreurs)?draft.responsablesErreurs.slice():[];
+    huileFriteusesSelection=Array.isArray(draft.huileFriteusesSelection)?draft.huileFriteusesSelection.slice():[];
+    if(lastStockService!==val('service')){lastStockService=val('service');buildStocks()}
+    renderRepeats();renderResponsablesErreurs();renderFriteuses();
+    const fields=draft.fields||{};
+    Object.keys(fields).forEach(id=>{const el=$(id);if(el&&id!=='dateUnlockPassword')el.value=fields[id]});
+    renderRepeats();renderResponsablesErreurs();renderFriteuses();
+    Object.keys(fields).forEach(id=>{const el=$(id);if(el&&id!=='dateUnlockPassword')el.value=fields[id]});
+    const scales=draft.scales||{};
+    Object.keys(scales).forEach(name=>{const value=scales[name];const radio=document.querySelector(`input[name="${name}"][value="${value}"]`);if(radio)radio.checked=true});
+  }finally{isRestoringDraft=false}
+  refresh();
+  showToast('Brouillon récupéré depuis ce téléphone.');
+}
+function restoreDraftIfAvailable(){
+  if(!commonComplete()||isRestoringDraft)return;
+  const key=draftStorageKey();
+  if(!key||lastDraftRestoreKey===key)return;
+  lastDraftRestoreKey=key;
+  const draft=readLocalJson(key);
+  if(draft)applyDraftForm(draft);
+}
+function scheduleDraftAutosave(){
+  if(!commonComplete()||isRestoringDraft)return;
+  clearTimeout(draftAutosaveTimer);
+  draftAutosaveTimer=setTimeout(()=>saveDraftLocalSilent(),350);
+}
+function getStoredPayload(service){const server=reportStatusCache[serverReportCacheKey(val('dateService'),val('restaurant'),service)]?.payload||null;return server||readLocalJson(sentPayloadKey(service))||readLocalJson(localPayloadKey(service))}
+function getMorningPayload(){return val('service')==='soir'?getStoredPayload('matin'):null}
+function getMorningProductValue(productId,field){const payload=getMorningPayload();if(!payload)return 0;const sources=[payload?.donneesService?.pertesService?.pertesParProduit,payload?.googleSheets?.pertesService?.pertesParProduit,payload?.donneesService?.stocks,payload?.googleSheets?.stocks];for(const rows of sources){if(Array.isArray(rows)){const row=rows.find(x=>x.codeProduit===productId);if(row&&row[field]!==undefined)return parseFloat(row[field])||0}}return 0}
+function getMorningHeuresPrevuesPlanning(){const payload=getMorningPayload();if(!payload)return 0;return parseFloat(payload?.donneesService?.rh?.heuresPrevuesPlanningSaisie??payload?.donneesService?.rh?.heuresPrevuesPlanning??payload?.googleSheets?.rapport?.heuresPrevuesPlanningSaisie??payload?.googleSheets?.rapport?.heuresPrevuesPlanning??0)||0}
+function getMorningPertesAmount(field){const payload=getMorningPayload();if(!payload)return 0;const sources=[payload?.donneesService?.pertesService,payload?.googleSheets?.pertesService,payload?.googleSheets?.rapport];for(const src of sources){if(src&&src[field+'Saisie']!==undefined)return parseFloat(src[field+'Saisie'])||0;if(src&&src[field]!==undefined)return parseFloat(src[field])||0}return 0}
+function serviceValueFromCumulative(currentValue,morningValue){return val('service')==='soir'?round2((parseFloat(currentValue)||0)-(parseFloat(morningValue)||0)):round2(currentValue)}
+function montantErreursService(){return serviceValueFromCumulative(num('montantErreurs'),getMorningPertesAmount('montantErreurs'))}
+function montantPertesService(){return serviceValueFromCumulative(num('montantPertes'),getMorningPertesAmount('montantPertes'))}
+function buildScale(name){return [1,2,3,4,5].map(v=>`<label><input type="radio" name="${name}" value="${v}"><span>${v}</span></label>`).join('')}function scaleVal(name){return document.querySelector(`input[name="${name}"]:checked`)?.value||''}
+function optionList(list,placeholder='Choisir'){return `<option value="">${placeholder}</option>`+list.map(x=>`<option>${x}</option>`).join('')}
+function updateResponsables(){const r=val('restaurant');$('responsable').disabled=!r;$('responsable').innerHTML=r?optionList(responsables[r],'Choisir le responsable'):'<option value="">Choisir d’abord le restaurant</option>';updateEmployeeSelects();refresh()}
+function updateEmployeeSelects(){const r=val('restaurant');const list=r?(employees[r]||employeesFallback[r]):[];qsa('.employeeSelect').forEach(s=>s.innerHTML=optionList(list,'Choisir un salarié'));renderHeuresSupp();renderResponsablesErreurs();renderFriteuses()}
+function commonComplete(){return !!(val('dateService')&&val('restaurant')&&val('responsable')&&val('service'))}
+function handleGate(){const ok=commonComplete();$('locked').classList.toggle('hidden',ok);$('mainForm').classList.toggle('hidden',!ok);$('gateNote').textContent=ok?`Rapport ${val('service')==='matin'?'Matin':'Soir'} ouvert pour ${restoLabel()}.`:`La date n’est pas préremplie volontairement : si remplissage après minuit, il faut choisir la bonne date. On ne peut saisir que hier ou aujourd’hui.`; qsa('.report-matin').forEach(el=>el.classList.toggle('hidden',!['matin','soir'].includes(val('service'))));qsa('.report-soir').forEach(el=>el.classList.toggle('hidden',val('service')!=='soir'))}
+function renderRepeats(){
+  $('redWrap').classList.toggle('hidden',val('hasReductions')!=='Oui');
+  $('refaitWrap').classList.toggle('hidden',val('hasRefaits')!=='Oui');
+  $('hsWrap').classList.toggle('hidden',val('hasHeuresSupp')!=='Oui');
+  $('redList').innerHTML=reductions.length?reductions.map((r,i)=>`<div class="repeat-row"><div class="repeat-head">Réduction #${i+1}<button type="button" class="mini-btn danger" onclick="removeReduction(${i})">Supprimer</button></div><div class="grid-3"><div class="field"><label>N° commande</label><input data-red="${i}:numero" value="${r.numero||''}"></div><div class="field"><label>Montant réduction</label><input type="number" step="0.01" min="0" data-red="${i}:montant" value="${r.montant||''}"></div><div class="field"><label>Explication</label><textarea data-red="${i}:explication">${r.explication||''}</textarea></div></div></div>`).join(''):'<div class="note">Aucune ligne. Clique sur “Ajouter une commande”.</div>';
+  $('refaitList').innerHTML=refaits.length?refaits.map((r,i)=>`<div class="repeat-row"><div class="repeat-head">Commande refaite #${i+1}<button type="button" class="mini-btn danger" onclick="removeRefait(${i})">Supprimer</button></div><div class="grid-4"><div class="field"><label>N° de la commande</label><input data-refait="${i}:numero" value="${r.numero||''}"></div><div class="field"><label>Article refait / toute la commande</label><input data-refait="${i}:article" value="${r.article||''}" placeholder="Ex : tacos M / toute la commande"></div><div class="field"><label>Montant</label><input type="number" step="0.01" min="0" data-refait="${i}:montant" value="${r.montant||''}"></div><div class="field"><label>Explication</label><textarea data-refait="${i}:explication">${r.explication||''}</textarea></div></div></div>`).join(''):'<div class="note">Aucune ligne. Clique sur “Ajouter une commande”.</div>';
+  qsa('[data-red]').forEach(el=>el.addEventListener('input',()=>{const [i,k]=el.dataset.red.split(':');reductions[i][k]=el.value;refresh()}));
+  qsa('[data-refait]').forEach(el=>el.addEventListener('input',()=>{const [i,k]=el.dataset.refait.split(':');refaits[i][k]=el.value;refresh()}));
+  renderHeuresSupp();
+}
+function renderHeuresSupp(){const r=val('restaurant');const list=r?(employees[r]||employeesFallback[r]):[];$('hsList').innerHTML=heuresSupp.length?heuresSupp.map((h,i)=>{const duree=diffHours(h.debut,h.fin);heuresSupp[i].heures=duree;return `<div class="repeat-row"><div class="repeat-head">Heures supp #${i+1}<button type="button" class="mini-btn danger" onclick="removeHeureSupp(${i})">Supprimer</button></div><div class="grid-4"><div class="field"><label>Équipier</label><select data-hs="${i}:nom">${optionList(list,'Choisir équipier')}</select></div><div class="field"><label>Début</label><input data-hs="${i}:debut" inputmode="text" placeholder="Ex : 18H05min" value="${h.debut||''}"></div><div class="field"><label>Fin</label><input data-hs="${i}:fin" inputmode="text" placeholder="Ex : 20H30min" value="${h.fin||''}"></div><div class="field calc-field"><label>Durée calculée</label><input readonly value="${duree?duree.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' h':''}"></div><div class="field" style="grid-column:1/-1"><label>Motif</label><textarea data-hs="${i}:motif">${h.motif||''}</textarea></div></div></div>`}).join(''):'<div class="note">Aucun équipier ajouté.</div>';qsa('[data-hs]').forEach(el=>{const [i,k]=el.dataset.hs.split(':');if(k==='nom')el.value=heuresSupp[i].nom||'';el.addEventListener('input',()=>{heuresSupp[i][k]=el.value;refresh()});el.addEventListener('change',()=>{heuresSupp[i][k]=(k==='debut'||k==='fin')?cleanTime(el.value):el.value;renderHeuresSupp();refresh()});el.addEventListener('blur',()=>{if(k==='debut'||k==='fin'){heuresSupp[i][k]=cleanTime(el.value);renderHeuresSupp();refresh()}})})}
+function addReduction(){reductions.push({numero:'',montant:'',explication:''});renderRepeats();refresh()}function removeReduction(i){reductions.splice(i,1);renderRepeats();refresh()}function addRefait(){refaits.push({numero:'',article:'',montant:'',explication:''});renderRepeats();refresh()}function removeRefait(i){refaits.splice(i,1);renderRepeats();refresh()}function addHeureSupp(){heuresSupp.push({nom:'',debut:'',fin:'',heures:0,motif:''});renderHeuresSupp();refresh()}function removeHeureSupp(i){heuresSupp.splice(i,1);renderHeuresSupp();refresh()}
+function renderResponsablesErreurs(){const wrap=$('erreursResponsablesWrap'),listEl=$('erreursResponsablesList');if(!wrap||!listEl)return;const count=Math.max(0,parseInt(val('nbErreurs')||'0',10)||0);while(responsablesErreurs.length<count)responsablesErreurs.push('');if(responsablesErreurs.length>count)responsablesErreurs=responsablesErreurs.slice(0,count);wrap.classList.toggle('hidden',count<=0);const r=val('restaurant');const list=r?(employees[r]||employeesFallback[r]):[];listEl.innerHTML=count?responsablesErreurs.map((nom,i)=>`<div class="repeat-row"><div class="repeat-head">Erreur #${i+1}</div><div class="field"><label>Personne responsable de l'erreur #${i+1} *</label><select id="erreurResp_${i}" data-erreur-resp="${i}">${optionList(list,'Choisir le responsable')}</select></div></div>`).join(''):'<div class="note">Aucune erreur renseignée.</div>';qsa('[data-erreur-resp]').forEach(el=>{const i=parseInt(el.dataset.erreurResp,10);el.value=responsablesErreurs[i]||'';el.addEventListener('change',()=>{responsablesErreurs[i]=el.value;refresh()});el.addEventListener('input',()=>{responsablesErreurs[i]=el.value;refresh()})})}
+function renderFriteuses(){const listEl=$('huileFriteusesList');if(!listEl)return;const r=val('restaurant');const list=r?(friteusesByRestaurant[r]||[]):[];huileFriteusesSelection=huileFriteusesSelection.filter(x=>list.includes(x));listEl.innerHTML=list.length?list.map(f=>`<label><input type="checkbox" value="${f}" data-friteuse ${huileFriteusesSelection.includes(f)?'checked':''}>${f}</label>`).join(''):'<div class="note">Choisis d’abord le restaurant.</div>';qsa('[data-friteuse]').forEach(el=>el.addEventListener('change',()=>{huileFriteusesSelection=qsa('[data-friteuse]:checked').map(x=>x.value);refresh()}))}
+function friteusesSelectionnees(){return huileFriteusesSelection.slice()}
+function buildStocks(){
+  const isSoir=val('service')==='soir';
+  const stockMode=isSoir?'Stock final / restant en fin de journée':'Stock matin / inventaire initial';
+  $('stockGrid').innerHTML=stockProducts.map(p=>`<div class="stock-card"><h3>${p.label}</h3><div class="note" style="margin-top:0;margin-bottom:10px">${stockMode}</div><div class="grid-2"><div class="field"><label>${isSoir?'Stock sachets ouvert soir en KG *':'Inventaire sachets ouvert matin en KG *'}</label><input type="number" step="0.01" min="0" id="stock_${p.id}_kg"></div><div class="field"><label>${isSoir?'Sachets restants *':'Nombre sachets *'} (${p.sachetKg} kg/sachet)</label><input type="number" step="0.5" min="0" id="stock_${p.id}_sachets"></div><div class="field"><label>${isSoir?'Cartons restants *':'Nombre cartons'} (${p.cartonKg} kg/carton) *</label><input type="number" step="0.5" min="0" id="stock_${p.id}_cartons"></div>${!isSoir?`<div class="field"><label>Livraison ${p.label} ? *</label><select id="stock_${p.id}_livraison"><option value="">Choisir</option><option>Non</option><option>Oui</option></select></div><div class="field hidden" id="wrap_stock_${p.id}_livraisonCartons"><label>Qté livraison ${p.label} en cartons *</label><input type="number" step="0.5" min="0" id="stock_${p.id}_livraisonCartons"></div>`:''}<div class="field"><label>Pertes en KG ${p.label} *</label><input type="number" step="0.01" min="0" id="stock_${p.id}_pertesKg"></div></div></div>`).join('');
+  $('stockTotals').innerHTML=stockProducts.map(p=>`<div class="stock-total"><span>${isSoir?'Stock final total':'Total stock matin'} ${p.label}</span><strong id="total_${p.id}">0,00 kg</strong></div>`).join('')+`<div class="stock-total"><span>Pertes produits en KG</span><strong id="total_pertes_produits_kg">0,00 kg</strong></div>`;
+  qsa('#stockGrid input,#stockGrid select').forEach(el=>{el.addEventListener('input',refresh);el.addEventListener('change',refresh)});
+}
+function stockTotalKg(p){const livraison=(val('service')==='matin'&&$( `stock_${p.id}_livraison` )&&val(`stock_${p.id}_livraison`)==='Oui')?num(`stock_${p.id}_livraisonCartons`)*p.cartonKg:0;return num(`stock_${p.id}_kg`)+(num(`stock_${p.id}_sachets`)*p.sachetKg)+(num(`stock_${p.id}_cartons`)*p.cartonKg)+livraison}
+function dosesVenduesProduitService(p){if(!usesDosesVenduesProduct(p))return 0;return serviceValueFromCumulative(num(`stock_${p.id}_dosesVendues`),getMorningProductValue(p.id,'dosesVendues'))}
+function dosesVenduesTotalSaisi(){return stockProducts.reduce((t,p)=>t+(usesDosesVenduesProduct(p)?num(`stock_${p.id}_dosesVendues`):0),0)}
+function dosesVenduesTotal(){return stockProducts.reduce((t,p)=>t+dosesVenduesProduitService(p),0)}
+function pertesProduitKgService(p){return serviceValueFromCumulative(num(`stock_${p.id}_pertesKg`),getMorningProductValue(p.id,'pertesKg'))}
+function pertesProduitsKgTotalSaisi(){return stockProducts.reduce((t,p)=>t+num(`stock_${p.id}_pertesKg`),0)}
+function pertesProduitsKgTotal(){return stockProducts.reduce((t,p)=>t+pertesProduitKgService(p),0)}
+function heuresSuppTotal(){return heuresSupp.reduce((t,h)=>t+diffHours(h.debut,h.fin),0)}
+function heuresPrevuesPlanningService(){return serviceValueFromCumulative(num('heuresPrevuesPlanning'),getMorningHeuresPrevuesPlanning())}
+function heuresReellesCalc(){return heuresPrevuesPlanningService()+(val('hasHeuresSupp')==='Oui'?heuresSuppTotal():0)}
+function conditionals(){stockProducts.forEach(p=>{const wrap=$(`wrap_stock_${p.id}_livraisonCartons`);if(wrap)wrap.classList.toggle('hidden',val(`stock_${p.id}_livraison`)!=='Oui')});const huileOui=val('huileChangement')==='Oui';const huileDateWrap=$('huileDateWrap');if(huileDateWrap)huileDateWrap.classList.toggle('hidden',!huileOui);const huileWrap=$('huileFriteusesWrap');if(huileWrap)huileWrap.classList.toggle('hidden',!huileOui);if(!huileOui){if($('huileDate'))$('huileDate').value='';huileFriteusesSelection=[];renderFriteuses()}[['fluidite','expFluiditeWrap'],['qualite','expQualiteWrap'],['satisfaction','expSatisfactionWrap'],['placement','expPlacementWrap'],['motivation','expMotivationWrap'],['recuperation','expRecuperationWrap']].forEach(([s,w])=>$(w).classList.toggle('hidden',!(parseInt(scaleVal(s))>0&&parseInt(scaleVal(s))<4)));$('expAttenteWrap').classList.toggle('hidden',!(num('tempsAttente')>10))}
+
+function updateServiceLabels(){
+  const isSoir=val('service')==='soir';
+  const serviceText=isSoir?'Soir':'Matin';
+  const armentieres=isArmentieres();
+  const setLabel=(inputId,text)=>{const el=$(inputId);const label=el?.closest('.field')?.querySelector('label');if(label)label.textContent=text};
+  qsa('.report-matin .block-title').forEach(t=>{t.textContent=t.textContent.replace(/^Service/,serviceText)});
+  qsa('.report-matin .block-title').forEach(t=>{t.textContent=t.textContent.replace(/^(Matin|Soir)/,serviceText)});
+  setLabel('caTotal',armentieres?'CA global Ticket Z hors Uber/Deliveroo *':'CA global - Ticket Z *');
+  setLabel('cmdTotal',armentieres?'Nbr commandes global Ticket Z hors Uber/Deliveroo *':'Nbr global de commandes - ticket Z *');
+  setLabel('caUber',armentieres?'CA Uber Eats hors Ticket Z global':'CA Uber Eats - Ticket Z');
+  setLabel('cmdUber',armentieres?'Nbr commandes Uber Eats hors Ticket Z global':'Nbr Commandes Uber Eats - Ticket Z');
+  setLabel('caDeliveroo',armentieres?'CA Deliveroo hors Ticket Z global':'CA Deliveroo - Ticket Z');
+  setLabel('cmdDeliveroo',armentieres?'Nbr commandes Deliveroo hors Ticket Z global':'Nbr Commandes Deliveroo - Ticket Z');
+  setLabel('caBornes',armentieres?'CA Bornes & caisse calculé = CA global - C&C':'CA Bornes & caisse calculé - à vérifier');
+  setLabel('cmdBornes',armentieres?'Commandes Bornes & caisse calculées = commandes globales - C&C':'Commandes Bornes & caisse calculées - à vérifier');
+  const caTotal=$('caTotal'); if(caTotal) caTotal.placeholder=isSoir?'CA cumulé journée : Matin + Soir':'CA du service matin';
+  const cmdTotal=$('cmdTotal'); if(cmdTotal) cmdTotal.placeholder=isSoir?'Commandes cumulées journée : Matin + Soir':'Commandes du service matin';
+  const note=$('caLogicNote');if(note)note.textContent=armentieres?'Armentières : Uber Eats et Deliveroo ne sont pas compris dans le Ticket Z global. Le calcul Bornes & Caisse déduit uniquement le Click & Collect. Le soir reste cumulatif sur la journée.':'Boulogne : le CA global Ticket Z comprend Uber Eats, Deliveroo et Click & Collect. Le calcul Bornes & Caisse déduit Uber + Deliveroo + C&C. Le soir reste cumulatif sur la journée.';
+}
+function serviceRules(){return {caSaisie:val('service')==='soir'?'cumul_journee_matin_plus_soir':'service_matin',caBornesEtCaisse:isArmentieres()?'armentieres_ca_global_moins_click_collect_uniquement':'boulogne_ca_global_moins_uber_deliveroo_click_collect',rhSaisie:val('service')==='soir'?'heures_planning_cumul_journee_matin_plus_soir':'service_selectionne',stockSaisie:val('service')==='soir'?'stock_restant_fin_journee':'stock_initial_journee',pertesKgProduits:val('service')==='soir'?'cumul_journee_matin_plus_soir':'service_matin',montantsErreursPertes:val('service')==='soir'?'cumul_journee_matin_plus_soir':'service_matin',dashboardCalculSoir:'soir_reel = cumul_soir - matin_du_meme_restaurant_meme_date'}}
+function refresh(){setDateBounds();if(lastStockService!==val('service')){lastStockService=val('service');buildStocks();}handleGate();restoreDraftIfAvailable();updateServiceLabels();stockProducts.forEach(p=>{const totalEl=$(`total_${p.id}`);if(totalEl)totalEl.textContent=stockTotalKg(p).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' kg'});const totalDosesEl=$('total_doses_vendues');if(totalDosesEl)totalDosesEl.textContent=dosesVenduesTotal().toLocaleString('fr-FR');const totalPertesKgEl=$('total_pertes_produits_kg');if(totalPertesKgEl)totalPertesKgEl.textContent=pertesProduitsKgTotal().toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' kg';const ca=num('caTotal'),cmd=num('cmdTotal'),ticket=cmd?ca/cmd:0,bCA=caBornesCalc(),bCmd=cmdBornesCalc(),pertes=pertesTotalCalc(),hReel=heuresReellesCalc();$('caBornes').value=money(bCA);$('cmdBornes').value=bCmd;$('totalPertesService').value=money(pertes);$('heuresReellesCalc').value=hReel?hReel.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' h':'';$('sumCA').textContent=money(ca);$('sumCmd').textContent=cmd;$('sumTicketMoyen').textContent=money(ticket);$('sumPertes').textContent=money(pertes);$('heroRestaurant').textContent=commonComplete()?restoLabel():'-';$('heroDate').textContent=val('dateService')||'-';const p=completion();$('progress').style.width=p+'%';$('progressText').textContent=commonComplete()?`${p}% complété · ${restoLabel()} · ${val('dateService')} · Service ${val('service')}`:'Renseigne les informations communes pour afficher le formulaire.';conditionals();scheduleReportStatusCheck(false);updateSubmitButtonState();handleMorningDependencyWarningOnCommonComplete();scheduleDraftAutosave()}
+function requiredFieldsForCurrentService(){
+  let req=['dateService','restaurant','responsable','service'];
+  if(!['matin','soir'].includes(val('service'))) return req;
+  req.push('caTotal','cmdTotal','caBoissons','qteBoissons','caDesserts','qteDesserts','caUber','cmdUber','caDeliveroo','cmdDeliveroo','caCC','cmdCC','hasReductions','hasRefaits','nbErreurs','montantErreurs','montantPertes','heuresPrevuesPlanning','hasHeuresSupp','tempsAttente','placeFriture','placeEnvoi','placePliage','placeToaster','placeCaisse','pointFort','amelioration');
+  for(let i=0;i<(parseInt(val('nbErreurs')||'0',10)||0);i++)req.push(`erreurResp_${i}`);
+  req.push('huileChangement');if(val('huileChangement')==='Oui')req.push('huileDate')
+  stockProducts.forEach(p=>{req.push(`stock_${p.id}_kg`,`stock_${p.id}_sachets`,`stock_${p.id}_cartons`);if(usesDosesVenduesProduct(p))req.push(`stock_${p.id}_dosesVendues`);req.push(`stock_${p.id}_pertesKg`);if(val('service')==='matin'){req.push(`stock_${p.id}_livraison`);if(val(`stock_${p.id}_livraison`)==='Oui')req.push(`stock_${p.id}_livraisonCartons`)}});
+  ['fluidite','qualite','satisfaction','placement','motivation','recuperation'].forEach(s=>req.push(s));
+  if(num('tempsAttente')>10)req.push('expAttente');
+  ['fluidite','qualite','satisfaction','placement','motivation','recuperation'].forEach(s=>{if(parseInt(scaleVal(s))<4)req.push('exp'+s.charAt(0).toUpperCase()+s.slice(1))});
+  return req;
+}
+function completion(){if(!commonComplete())return 0;let req=requiredFieldsForCurrentService();let ok=0;req.forEach(id=>{if(['fluidite','qualite','satisfaction','placement','motivation','recuperation'].includes(id)){if(scaleVal(id))ok++}else if(val(id)||num(id)>0)ok++});return Math.round(ok/req.length*100)}
+function indiceService(){const notes=['fluidite','qualite','satisfaction','placement','motivation','recuperation'].map(scaleVal).filter(Boolean).map(Number);return notes.length?Math.round((notes.reduce((a,b)=>a+b,0)/notes.length)*100)/100:0}
+function collect(){
+  const bCA=caBornesCalc(),bCmd=cmdBornesCalc(),ca=num('caTotal'),cmd=num('cmdTotal'),ticketMoyen=cmd?Math.round((ca/cmd)*100)/100:0;
+  const montantErreursSaisie=num('montantErreurs'),montantPertesSaisie=num('montantPertes'),montantErreursMatin=getMorningPertesAmount('montantErreurs'),montantPertesMatin=getMorningPertesAmount('montantPertes'),montantErreursServiceCalc=montantErreursService(),montantPertesServiceCalc=montantPertesService(),pertesTotal=pertesTotalCalc();
+  const hSuppTotal=heuresSuppTotal(),hPrevuesSaisie=num('heuresPrevuesPlanning'),hPrevuesMatin=getMorningHeuresPrevuesPlanning(),hPrevuesService=heuresPrevuesPlanningService(),hReelles=heuresReellesCalc();
+  const matinReference=getMorningPayload();
+  const meta={dateService:val('dateService'),restaurant:restoLabel(),restaurantCode:val('restaurant'),responsable:val('responsable'),service:val('service'),rapportUniqueKey:reportUniqueKey(),createdAt:new Date().toISOString(),matinReferenceLocale:!!matinReference,reglesService:serviceRules()};
+  const caBlock={global:{ca:ca,commandes:cmd,ticketMoyenGlobal:ticketMoyen},boissons:{ca:num('caBoissons'),quantite:num('qteBoissons')},desserts:{ca:num('caDesserts'),quantite:num('qteDesserts')},uber:{ca:num('caUber'),commandes:num('cmdUber')},deliveroo:{ca:num('caDeliveroo'),commandes:num('cmdDeliveroo')},clickCollect:{ca:num('caCC'),commandes:num('cmdCC')},bornesEtCaisseCalcule:{ca:bCA,commandes:bCmd}};
+  const gestionClient={reductionsAppliquees:val('hasReductions'),reductions:val('hasReductions')==='Oui'?reductions.map(r=>({...r,montant:parseFloat(r.montant)||0})):[],commandesRefaites:val('hasRefaits'),refaits:val('hasRefaits')==='Oui'?refaits.map(r=>({...r,montant:parseFloat(r.montant)||0})):[]};
+  const responsablesErreursRows=responsablesErreurs.map((nom,i)=>({numeroErreur:i+1,responsable:nom}));
+  const pertesParProduit=stockProducts.map(p=>{const pertesKgSaisie=num(`stock_${p.id}_pertesKg`),pertesKgMatin=getMorningProductValue(p.id,'pertesKg'),pertesKgService=pertesProduitKgService(p);return {produit:p.label,codeProduit:p.id,pertesKg:pertesKgService,pertesKgService:pertesKgService,pertesKgSaisie:pertesKgSaisie,pertesKgMatinDeduit:val('service')==='soir'?pertesKgMatin:0}});
+  const pertesService={nombreErreurs:num('nbErreurs'),responsablesErreurs:responsablesErreursRows,montantErreurs:montantErreursServiceCalc,montantErreursService:montantErreursServiceCalc,montantErreursSaisie:montantErreursSaisie,montantErreursMatinDeduit:val('service')==='soir'?montantErreursMatin:0,montantPertes:montantPertesServiceCalc,montantPertesService:montantPertesServiceCalc,montantPertesSaisie:montantPertesSaisie,montantPertesMatinDeduit:val('service')==='soir'?montantPertesMatin:0,montantTotalCalcule:pertesTotal,montantTotalSaisie:round2(montantErreursSaisie+montantPertesSaisie),pertesParProduit:pertesParProduit,totalPertesProduitsKg:pertesProduitsKgTotal(),totalPertesProduitsKgSaisie:pertesProduitsKgTotalSaisi(),totalPertesProduitsKgMatinDeduit:val('service')==='soir'?round2(pertesProduitsKgTotalSaisi()-pertesProduitsKgTotal()):0};
+  const consommationHuiles={changementHuile:val('huileChangement'),jourChangement:val('huileChangement')==='Oui'?val('huileDate'):'',friteuses:val('huileChangement')==='Oui'?friteusesSelectionnees():[]};
+  const rh={heuresPrevuesPlanning:hPrevuesService,heuresPrevuesPlanningService:hPrevuesService,heuresPrevuesPlanningSaisie:hPrevuesSaisie,heuresPrevuesPlanningMatinDeduit:val('service')==='soir'?hPrevuesMatin:0,heuresSuppRajoutees:val('hasHeuresSupp'),totalHeuresSuppCalcule:hSuppTotal,heuresReellesCalculees:hReelles,heuresSupp:val('hasHeuresSupp')==='Oui'?heuresSupp.map(h=>({...h,heures:diffHours(h.debut,h.fin)})):[],placements:{friture:val('placeFriture'),envoi:val('placeEnvoi'),pliage:val('placePliage'),toaster:val('placeToaster'),caisse:val('placeCaisse')},tempsAttenteMaxMinutes:num('tempsAttente'),explicationTempsAttente:val('expAttente')};
+  const stocks=stockProducts.map(p=>{const pertesKgSaisie=num(`stock_${p.id}_pertesKg`),pertesKgMatin=getMorningProductValue(p.id,'pertesKg'),pertesKgService=pertesProduitKgService(p);return {produit:p.label,codeProduit:p.id,typeStock:serviceRules().stockSaisie,kgSaisi:num(`stock_${p.id}_kg`),sachets:num(`stock_${p.id}_sachets`),cartons:num(`stock_${p.id}_cartons`),cartonKg:p.cartonKg,sachetKg:p.sachetKg,livraison:val('service')==='matin'?val(`stock_${p.id}_livraison`):'Non applicable soir',livraisonCartons:val('service')==='matin'&&val(`stock_${p.id}_livraison`)==='Oui'?num(`stock_${p.id}_livraisonCartons`):0,pertesKg:pertesKgService,pertesKgService:pertesKgService,pertesKgSaisie:pertesKgSaisie,pertesKgMatinDeduit:val('service')==='soir'?pertesKgMatin:0,totalKg:stockTotalKg(p)}});
+  const evaluation={fluidite:scaleVal('fluidite'),qualitePreparation:scaleVal('qualite'),satisfactionClient:scaleVal('satisfaction'),placement:scaleVal('placement'),motivationEquipe:scaleVal('motivation'),recuperationService:scaleVal('recuperation'),indiceService:indiceService(),explications:{fluidite:val('expFluidite'),qualite:val('expQualite'),satisfaction:val('expSatisfaction'),placement:val('expPlacement'),motivation:val('expMotivation'),recuperation:val('expRecuperation')},pointFort:val('pointFort'),amelioration:val('amelioration')};
+  return {meta,serviceSelectionne:val('service'),donneesService:{ca:caBlock,gestionClient,pertesService,consommationHuiles,rh,stocks,evaluation},matin:{ca:caBlock,gestionClient,pertesService,consommationHuiles,rh,stocks,evaluation},calculs:{ticketMoyenGlobal:ticketMoyen,caBornesEtCaisse:bCA,commandesBornesEtCaisse:bCmd,totalErreursEtPertes:pertesTotal,montantErreurs:montantErreursServiceCalc,montantErreursSaisie:montantErreursSaisie,montantErreursMatinDeduit:val('service')==='soir'?montantErreursMatin:0,montantPertes:montantPertesServiceCalc,montantPertesSaisie:montantPertesSaisie,montantPertesMatinDeduit:val('service')==='soir'?montantPertesMatin:0,totalPertesProduitsKg:pertesProduitsKgTotal(),totalPertesProduitsKgSaisie:pertesProduitsKgTotalSaisi(),totalHeuresSupp:hSuppTotal,heuresPrevuesPlanning:hPrevuesService,heuresPrevuesPlanningSaisie:hPrevuesSaisie,heuresPrevuesPlanningMatinDeduit:val('service')==='soir'?hPrevuesMatin:0,heuresReelles:hReelles,indiceService:indiceService(),dashboard:{rapportsParJourAttendus:4,comparaisons:['matin_par_restaurant','soir_reel_par_restaurant','matin_vs_soir_par_restaurant','matin_vs_soir_entre_restaurants','journee_complete_entre_restaurants'],filtres:['jour','semaine','mois'],formuleSoirReel:'rapport_soir_cumulatif - rapport_matin'}},googleSheets:{rapport:{...meta,caGlobal:ca,commandesGlobales:cmd,ticketMoyenGlobal:ticketMoyen,caBoissons:num('caBoissons'),quantiteBoissons:num('qteBoissons'),caDesserts:num('caDesserts'),quantiteDesserts:num('qteDesserts'),caBornesEtCaisse:bCA,commandesBornesEtCaisse:bCmd,totalErreursEtPertes:pertesTotal,montantErreurs:montantErreursServiceCalc,montantErreursSaisie:montantErreursSaisie,montantErreursMatinDeduit:val('service')==='soir'?montantErreursMatin:0,montantPertes:montantPertesServiceCalc,montantPertesSaisie:montantPertesSaisie,montantPertesMatinDeduit:val('service')==='soir'?montantPertesMatin:0,totalPertesProduitsKg:pertesProduitsKgTotal(),totalPertesProduitsKgSaisie:pertesProduitsKgTotalSaisi(),totalHeuresSupp:hSuppTotal,heuresPrevuesPlanning:hPrevuesService,heuresPrevuesPlanningSaisie:hPrevuesSaisie,heuresPrevuesPlanningMatinDeduit:val('service')==='soir'?hPrevuesMatin:0,heuresReelles:hReelles,indiceService:indiceService()},ca:caBlock,gestionClient,pertesService,consommationHuiles,rh,stocks,evaluation}}
+}
+function storageKey(){return localPayloadKey(val('service'))}
+function isVisible(el){return !!(el.offsetWidth||el.offsetHeight||el.getClientRects().length)}
+function markInvalid(el,state){if(el)el.classList.toggle('invalid',!!state)}
+function rowsComplete(rows,keys){return rows.every(r=>keys.every(k=>String(r[k]??'').trim()!==''&&(k==='montant'?parseFloat(r[k])>=0:true)))}
+function validateAll(checkDependencies=true){renderResponsablesErreurs();qsa('.invalid').forEach(el=>el.classList.remove('invalid'));qsa('.scale span.invalid').forEach(el=>el.classList.remove('invalid'));if(!commonComplete()){showToast('Complète d’abord les informations communes.');return false}if(!isAllowedDate()){markInvalid($('dateService'),true);showToast('Date autorisée : aujourd’hui ou hier uniquement, sauf mot de passe.');return false}if(isReportAlreadySent()){showToast('Ce rapport a déjà été envoyé pour ce restaurant, cette date et ce service.');updateSubmitButtonState();return false}if(checkDependencies){const depMsg=sendDependencyMessage();if(depMsg){setSendStatus(depMsg,'warn');showToast(depMsg);updateSubmitButtonState();return false}}let ok=true;requiredFieldsForCurrentService().forEach(id=>{if(['fluidite','qualite','satisfaction','placement','motivation','recuperation'].includes(id)){if(!scaleVal(id)){qsa(`input[name="${id}"]`).forEach(i=>i.closest('label')?.querySelector('span')?.classList.add('invalid'));ok=false}}else{const el=$(id);if(el&&!el.disabled&&isVisible(el)&&!String(el.value||'').trim()){markInvalid(el,true);ok=false}}});if(val('huileChangement')==='Oui'){if(!isAllowedHuileDate()){markInvalid($('huileDate'),true);ok=false}if(!friteusesSelectionnees().length){markInvalid($('huileFriteusesWrap'),true);ok=false}}if(val('hasReductions')==='Oui'&&!rowsComplete(reductions,['numero','montant','explication']))ok=false;if(val('hasRefaits')==='Oui'&&!rowsComplete(refaits,['numero','article','montant','explication']))ok=false;if(val('hasHeuresSupp')==='Oui'&&!rowsComplete(heuresSupp,['nom','debut','fin','motif']))ok=false;if(!ok)showToast('Complète tous les champs obligatoires affichés.');return ok}
+async function saveLocal(){
+  await ensureReportStatusesFromServer(false);
+  if(hasMorningPreviousReportMissing()){
+    if(!commonComplete()){showToast('Complète d’abord les informations communes pour enregistrer le brouillon.');return}
+    const canOpenSendModal=completion()>=100&&validateAll(false);
+    const payload=canOpenSendModal?collect():null;
+    saveDraftLocalSilent(payload);
+    setSendStatus(canOpenSendModal?'Brouillon enregistré dans ce téléphone. Dès qu’Omar donne son accord à l’oral, clique sur « Envoyer maintenant ».':'Brouillon enregistré dans ce téléphone. Le bouton envoyer reste masqué tant que la veille n’est pas faite.','warn');
+    showToast('Brouillon enregistré dans ce téléphone.');
+    if(canOpenSendModal)showMorningDraftOverlay();
+    updateSubmitButtonState();
+    return;
+  }
+  saveDraftLocalWithMessage();
+}
+async function validateReport(){
+  if(isSendingReport)return;
+
+  await ensureReportStatusesFromServer(true);
+
+  if(!validateAll())return;
+
+  const payload=collect();
+  saveDraftLocalSilent(payload);
+  console.log('REPORTING_PAYLOAD_COMPLET',payload);
+
+  const sendAfterOmarValidation=morningDependencyWarningForceSend;
+  morningDependencyWarningForceSend=false;
+
+  if(hasMorningPreviousReportMissing()&&!sendAfterOmarValidation){
+    setSendStatus('Brouillon enregistré dans ce téléphone. Dès qu’Omar donne son accord à l’oral, clique sur « Envoyer maintenant ».','warn');
+    showToast('Brouillon enregistré dans ce téléphone.');
+    showMorningDraftOverlay();
+    return;
+  }
+
+  isSendingReport=true;
+  updateSubmitButtonState();
+  setSendStatus('Ne quittez pas la page, le rapport est en cours d’envoi vers Google Sheets...','warn');
+  showToast('Envoi en cours, ne quittez pas la page.');
+
+  if(!APPS_SCRIPT_URL){
+    markReportSent(payload);
+    isSendingReport=false;
+    updateSubmitButtonState();
+    setSendStatus('Rapport validé en local. Ajoute l’URL Apps Script pour envoyer chaque bloc dans sa feuille.','ok');
+    showToast('Rapport validé en local.');
+    return;
+  }
+
+  try{
+    await fetch(APPS_SCRIPT_URL,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+
+    let confirmed=null;
+    for(let i=0;i<5;i++){
+      await new Promise(resolve=>setTimeout(resolve,i===0?2200:1500));
+      confirmed=await checkReportOnServer(
+        val('dateService'),
+        val('restaurant'),
+        val('service'),
+        true
+      );
+      if(confirmed&&confirmed.exists)break;
+    }
+
+    if(confirmed&&confirmed.exists){
+      markReportSent(confirmed.payload||payload);
+      isSendingReport=false;
+      updateSubmitButtonState();
+      setSendStatus(`Rapport envoyé et confirmé dans Google Sheets : ${reportHumanLabel()}.`,'ok');
+      showToast('Rapport confirmé dans Google Sheets.');
+    }else{
+      clearReportSentLocal(val('dateService'),val('restaurant'),val('service'));
+      isSendingReport=false;
+      updateSubmitButtonState();
+      setSendStatus('Envoi non confirmé dans Google Sheets. Le brouillon est conservé, tu peux réessayer après quelques secondes.','warn');
+      showToast('Envoi non confirmé. Brouillon conservé.');
+    }
+  }catch(e){
+    console.error(e);
+    clearReportSentLocal(val('dateService'),val('restaurant'),val('service'));
+    isSendingReport=false;
+    updateSubmitButtonState();
+    setSendStatus('Erreur d’envoi. Le brouillon est gardé en local, tu peux réessayer.','warn');
+    showToast('Erreur d’envoi. Brouillon gardé en local.');
+  }
+}
+function resetForm(){if(!confirm('Réinitialiser le formulaire affiché ?'))return;document.querySelector('form')?.reset();reductions=[];refaits=[];heuresSupp=[];responsablesErreurs=[];huileFriteusesSelection=[];qsa('input[type=radio]').forEach(i=>i.checked=false);renderRepeats();refresh();showToast('Formulaire réinitialisé.')}
+function init(){setDateBounds();buildStocks();renderFriteuses();qsa('[data-scale]').forEach(el=>el.innerHTML=buildScale(el.dataset.scale));qsa('input,select,textarea').forEach(el=>{el.addEventListener('input',refresh);el.addEventListener('change',refresh)});document.addEventListener('input',scheduleDraftAutosave,true);document.addEventListener('change',scheduleDraftAutosave,true);['dateService','restaurant','service'].forEach(id=>$(id)?.addEventListener('change',()=>{morningDependencyWarningForceSend=false;closeMorningDependencyWarning();closeMorningDraftOverlay()}));const unlockBtn=$('dateUnlockBtn'),unlockPanel=$('dateUnlockPanel'),unlockEl=$('dateUnlockPassword');if(unlockBtn&&unlockPanel){unlockBtn.addEventListener('click',()=>{unlockPanel.classList.toggle('show');if(unlockPanel.classList.contains('show'))setTimeout(()=>unlockEl?.focus(),50)})}if(unlockEl){unlockEl.addEventListener('input',()=>{setDateBounds();refresh();if(isDateUnlocked()&&unlockPanel)unlockPanel.classList.remove('show')});unlockEl.addEventListener('change',()=>{setDateBounds();refresh();if(isDateUnlocked()&&unlockPanel)unlockPanel.classList.remove('show')})}['dateService','huileDate'].forEach(id=>{const el=$(id);if(el){el.addEventListener('change',()=>{enforceDateRange(id,true);refresh()});el.addEventListener('blur',()=>{enforceDateRange(id,true);refresh()})}});$('restaurant').addEventListener('change',()=>{huileFriteusesSelection=[];updateResponsables();renderFriteuses()});$('nbErreurs').addEventListener('input',()=>{renderResponsablesErreurs();refresh()});$('nbErreurs').addEventListener('change',()=>{renderResponsablesErreurs();refresh()});$('huileChangement').addEventListener('change',()=>{if(val('huileChangement')!=='Oui'){if($('huileDate'))$('huileDate').value='';huileFriteusesSelection=[];renderFriteuses()}refresh()});['hasReductions','hasRefaits','hasHeuresSupp'].forEach(id=>$(id).addEventListener('change',()=>{if(id==='hasReductions'&&val(id)==='Oui'&&!reductions.length)addReduction();if(id==='hasRefaits'&&val(id)==='Oui'&&!refaits.length)addRefait();if(id==='hasHeuresSupp'&&val(id)==='Oui'&&!heuresSupp.length)addHeureSupp();renderRepeats();refresh()}));updateResponsables();refresh()}init();
+</script>
+</body>
+</html>
